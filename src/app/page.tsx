@@ -1,5 +1,6 @@
 import HeroScrollytelling from "@/components/sections/HeroScrollytelling";
 import AboutPariTrends from "@/components/sections/AboutPariTrends";
+import SignatureCollections from "@/components/sections/SignatureCollections";
 
 /**
  * Pari Trends — Homepage
@@ -7,6 +8,7 @@ import AboutPariTrends from "@/components/sections/AboutPariTrends";
  * Phase 01: Complete responsive navigation bar.
  * Phase 02: Cinematic scroll-driven boutique walkthrough hero.
  * Phase 03: Editorial brand intro & About section.
+ * Phase 04: Signature Collections lookbook showcase.
  */
 export default function Home() {
   return (
@@ -17,10 +19,12 @@ export default function Home() {
       {/* ─── Phase 03: About Pari Trends ─── */}
       <AboutPariTrends />
 
+      {/* ─── Phase 04: Signature Collections ─── */}
+      <SignatureCollections />
+
       {/* ─── Future section anchors & smooth release ─── */}
       {(
         [
-          { id: "collections", label: "Collections" },
           { id: "featured", label: "Featured" },
           { id: "stories", label: "Style Stories" },
           { id: "trends", label: "Latest Trends" },
