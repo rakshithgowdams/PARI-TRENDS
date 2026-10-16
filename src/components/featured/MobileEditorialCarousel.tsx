@@ -24,9 +24,10 @@ export default function MobileEditorialCarousel() {
   // Update current slide index based on scroll position
   const handleScroll = () => {
     const container = scrollContainerRef.current;
-    if (!container) return;
-    const cardWidth = container.offsetWidth * 0.82;
-    const index = Math.round(container.scrollLeft / cardWidth);
+    if (!container || !container.children[0]) return;
+    const firstCard = container.children[0] as HTMLElement;
+    const cardStep = firstCard.offsetWidth + 16; // card width + gap
+    const index = Math.round(container.scrollLeft / cardStep);
     setCurrentIndex(Math.max(0, Math.min(FEATURED_EDITS.length - 1, index)));
   };
 
@@ -35,10 +36,12 @@ export default function MobileEditorialCarousel() {
     if (!container) return;
     const cards = container.children;
     if (cards[index]) {
-      (cards[index] as HTMLElement).scrollIntoView({
+      const card = cards[index] as HTMLElement;
+      const targetLeft =
+        card.offsetLeft - (container.offsetWidth - card.offsetWidth) / 2;
+      container.scrollTo({
+        left: Math.max(0, targetLeft),
         behavior: "smooth",
-        block: "nearest",
-        inline: "center",
       });
       setCurrentIndex(index);
     }
@@ -61,7 +64,7 @@ export default function MobileEditorialCarousel() {
   }, []);
 
   return (
-    <div className="block lg:hidden w-full">
+    <div className="block lg:hidden w-full overflow-hidden">
       {/* ─── Horizontal Scroll Container with CSS Snap ─── */}
       <div
         ref={scrollContainerRef}

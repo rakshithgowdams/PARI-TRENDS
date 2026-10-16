@@ -136,16 +136,21 @@ export default function SignatureCollections() {
         </div>
 
         {/* ─── Editorial Grid: 12-Column Responsive Layout ─── */}
-        <div className="mt-12 sm:mt-16 space-y-5 lg:space-y-6">
-
-          {/* ─── Row 1: Statement Category Cards (3 Cards, 4 cols each) ─── */}
+        <div className="mt-12 sm:mt-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6">
-            {row1Items.map((collection, index) => {
-              const delay = prefersReducedMotion ? 0 : 350 + index * 120;
+            {COLLECTIONS_DATA.map((collection, index) => {
+              const delay = prefersReducedMotion ? 0 : 350 + index * 90;
+              const isStatement = collection.row === 1;
               return (
                 <div
                   key={collection.id}
-                  className={`col-span-1 sm:col-span-1 lg:col-span-4 transition-all duration-700 ease-out ${
+                  className={`col-span-1 sm:col-span-1 ${
+                    isStatement ? "lg:col-span-4" : "lg:col-span-3"
+                  } ${
+                    index === 6
+                      ? "sm:col-span-2 sm:max-w-md sm:mx-auto lg:max-w-none lg:col-span-3"
+                      : ""
+                  } transition-all duration-700 ease-out ${
                     isVisible || prefersReducedMotion
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
@@ -157,27 +162,6 @@ export default function SignatureCollections() {
               );
             })}
           </div>
-
-          {/* ─── Row 2: Versatile Category Cards (4 Cards, 3 cols each) ─── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6">
-            {row2Items.map((collection, index) => {
-              const delay = prefersReducedMotion ? 0 : 700 + index * 100;
-              return (
-                <div
-                  key={collection.id}
-                  className={`col-span-1 sm:col-span-1 lg:col-span-3 transition-all duration-700 ease-out ${
-                    isVisible || prefersReducedMotion
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-8"
-                  }`}
-                  style={{ transitionDelay: `${delay}ms` }}
-                >
-                  <CollectionCard collection={collection} />
-                </div>
-              );
-            })}
-          </div>
-
         </div>
 
         {/* ─── Bottom Subtle Editorial Note ─── */}

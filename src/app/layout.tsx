@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/layout/SiteHeader";
@@ -16,6 +16,12 @@ const manrope = Manrope({
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#F8F2EA",
+};
 
 export const metadata: Metadata = {
   title: "Pari Trends — Women's Fashion Boutique | Alur, Hassan",
