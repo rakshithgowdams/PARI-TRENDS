@@ -68,16 +68,6 @@ export default function AboutPariTrends() {
       className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-24 sm:py-32 lg:py-44 overflow-hidden"
       aria-label="About Pari Trends — The Boutique"
     >
-      {/* ─── 1. Subtle Background Typography: "PARI" Watermark ─── */}
-      <div
-        className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none overflow-hidden -z-0 opacity-[0.035] sm:opacity-[0.045]"
-        aria-hidden="true"
-      >
-        <span className="font-serif text-[clamp(10rem,25vw,24rem)] font-bold tracking-[0.08em] text-[#1E1A17] leading-none select-none block translate-x-12 sm:translate-x-20">
-          PARI
-        </span>
-      </div>
-
       {/* Ambient warm gradient glow */}
       <div
         className="absolute -top-32 left-1/3 w-[550px] h-[550px] rounded-full bg-[#EFE4D6]/50 blur-3xl pointer-events-none -z-0"
@@ -88,22 +78,33 @@ export default function AboutPariTrends() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 sm:gap-16 lg:gap-12 xl:gap-20 items-center">
 
           {/* ─── 2. Left Column: Editorial Storytelling (~55% width) ─── */}
-          <div className="lg:col-span-6 xl:col-span-6 flex flex-col justify-center">
+          <div className="relative lg:col-span-6 xl:col-span-6 flex flex-col justify-center">
 
-            {/* Small Eyebrow Label */}
+            {/* ─── Subtle Editorial Background Typography: "PARI" Watermark (Left Column Exclusive) ─── */}
             <div
-              className={`flex items-center gap-3 mb-6 sm:mb-8 transition-all duration-700 ease-out ${
-                isVisible || prefersReducedMotion
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4"
-              }`}
-              style={{ transitionDelay: prefersReducedMotion ? "0ms" : "100ms" }}
+              className="absolute left-0 bottom-4 sm:bottom-8 lg:bottom-12 pointer-events-none select-none overflow-hidden z-0 opacity-[0.035] sm:opacity-[0.045] max-w-full"
+              aria-hidden="true"
             >
-              <span className="w-8 h-[1.5px] bg-[#C89A2D]" aria-hidden="true" />
-              <span className="font-sans text-[11px] sm:text-[12px] font-semibold tracking-[0.3em] uppercase text-[#C89A2D]">
-                01 / THE BOUTIQUE
+              <span className="font-serif font-bold text-[clamp(6rem,15vw,13.5rem)] leading-none text-[#1E1A17] tracking-[0.06em] select-none block -translate-x-2 sm:-translate-x-4">
+                PARI
               </span>
             </div>
+
+            <div className="relative z-10 flex flex-col justify-center">
+              {/* Small Eyebrow Label */}
+              <div
+                className={`flex items-center gap-3 mb-6 sm:mb-8 transition-all duration-700 ease-out ${
+                  isVisible || prefersReducedMotion
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "100ms" }}
+              >
+                <span className="w-8 h-[1.5px] bg-[#C89A2D]" aria-hidden="true" />
+                <span className="font-sans text-[11px] sm:text-[12px] font-semibold tracking-[0.3em] uppercase text-[#C89A2D]">
+                  01 / THE BOUTIQUE
+                </span>
+              </div>
 
             {/* Expressive Editorial Headline with Hand-Set Typographic Overlap */}
             <div className="mb-6 sm:mb-8">
@@ -196,6 +197,7 @@ export default function AboutPariTrends() {
             </div>
 
           </div>
+        </div>
 
           {/* ─── 3. Right Column: Layered Fashion Editorial (~45% width) ─── */}
           <div className="lg:col-span-6 xl:col-span-6 relative flex items-center justify-center lg:justify-end pt-4 sm:pt-6 lg:pt-0">
