@@ -109,7 +109,14 @@ export default function HeroScrollytelling() {
       // ─────────────────────────────────────────────────────────────
       // Gradient 1: Left contrast (active 0.00 – 0.34)
       if (grad1Ref.current) {
-        const g1 = smoothstep(0.34, 0.26, progress);
+        let g1 = 1;
+        if (progress > 0.25 && progress <= 0.34) {
+          const t = (progress - 0.25) / 0.09;
+          const eased = t * t * (3 - 2 * t);
+          g1 = 1 - eased;
+        } else if (progress > 0.34) {
+          g1 = 0;
+        }
         grad1Ref.current.style.opacity = g1.toFixed(3);
       }
 
@@ -129,47 +136,31 @@ export default function HeroScrollytelling() {
 
       // ─────────────────────────────────────────────────────────────
       // 2. SCENE 01: WELCOME (0.00 – 0.34)
+      // Fully visible immediately on initial load at progress 0.00–0.25.
+      // Exits between 0.25 and 0.34 with smooth upward translate (-20px) and fade.
       // ─────────────────────────────────────────────────────────────
       if (s1GroupRef.current) {
-        if (progress > 0.35) {
+        if (progress > 0.34) {
           s1GroupRef.current.style.opacity = "0";
           s1GroupRef.current.style.pointerEvents = "none";
           s1GroupRef.current.setAttribute("aria-hidden", "true");
+        } else if (progress <= 0.25) {
+          // Progress 0.00 – 0.25: All text 100% visible at original position
+          s1GroupRef.current.style.opacity = "1";
+          s1GroupRef.current.style.transform = "translate3d(0, 0, 0)";
+          s1GroupRef.current.style.pointerEvents = "auto";
+          s1GroupRef.current.setAttribute("aria-hidden", "false");
         } else {
-          // Exit interpolation (0.26 – 0.34)
-          const exitT = smoothstep(0.26, 0.34, progress);
-          const groupOpacity = 1 - exitT;
-          const groupY = -exitT * 18;
+          // Progress 0.25 – 0.34: Smoothly fade and translate upward 20px
+          const t = (progress - 0.25) / 0.09;
+          const eased = t * t * (3 - 2 * t);
+          const groupOpacity = 1 - eased;
+          const groupY = -eased * 20;
 
           s1GroupRef.current.style.opacity = groupOpacity.toFixed(3);
           s1GroupRef.current.style.transform = `translate3d(0, ${groupY.toFixed(1)}px, 0)`;
           s1GroupRef.current.style.pointerEvents = groupOpacity > 0.1 ? "auto" : "none";
           s1GroupRef.current.setAttribute("aria-hidden", groupOpacity > 0.1 ? "false" : "true");
-
-          // Staggered reveals on entry (0.00 – 0.09)
-          if (s1EyebrowRef.current) {
-            const tEye = smoothstep(0.00, 0.05, progress);
-            s1EyebrowRef.current.style.opacity = tEye.toFixed(3);
-            s1EyebrowRef.current.style.transform = `translate3d(0, ${((1 - tEye) * 14).toFixed(1)}px, 0)`;
-          }
-
-          if (s1Line1Ref.current) {
-            const tL1 = smoothstep(0.01, 0.065, progress);
-            s1Line1Ref.current.style.opacity = tL1.toFixed(3);
-            s1Line1Ref.current.style.transform = `translate3d(0, ${((1 - tL1) * 105).toFixed(1)}%, 0)`;
-          }
-
-          if (s1Line2Ref.current) {
-            const tL2 = smoothstep(0.03, 0.08, progress);
-            s1Line2Ref.current.style.opacity = tL2.toFixed(3);
-            s1Line2Ref.current.style.transform = `translate3d(0, ${((1 - tL2) * 105).toFixed(1)}%, 0)`;
-          }
-
-          if (s1SubRef.current) {
-            const tSub = smoothstep(0.04, 0.09, progress);
-            s1SubRef.current.style.opacity = tSub.toFixed(3);
-            s1SubRef.current.style.transform = `translate3d(0, ${((1 - tSub) * 12).toFixed(1)}px, 0)`;
-          }
         }
       }
 
