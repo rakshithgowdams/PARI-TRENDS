@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
+/* ─── Pari Trends — Brand Design Tokens ─── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --pt-pink: #D81B77;
+  --pt-pink-deep: #AD1457;
+  --pt-gold: #C89A2D;
+  --pt-saffron: #F39A1E;
+  --pt-ivory: #F8F2EA;
+  --pt-beige: #EFE4D6;
+  --pt-charcoal: #1E1A17;
+  --pt-secondary: #6B5B52;
+
+  --background: var(--pt-ivory);
+  --foreground: var(--pt-charcoal);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-playfair);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Base ─── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scroll offset for fixed navbar ─── */
+
+[id] {
+  scroll-margin-top: 96px;
+}
+
+/* ─── Nav link hover underline ─── */
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 2px;
+  height: 1.5px;
+  border-radius: 9999px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms ease-out;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Active nav links already show their underline via the component span,
+   so suppress the pseudo-element hover underline on them. */
+.nav-link[data-active="true"]::after {
+  display: none;
+}
+
+/* ─── Mobile drawer staggered animation ─── */
+
+.mobile-nav-item {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+/* When the drawer is open, the parent has translate-x-0 and
+   the items animate in with a staggered delay. */
+[role="dialog"][aria-modal="true"]:not(.translate-x-full) .mobile-nav-item {
+  animation: slideInRight 350ms ease-out forwards;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-item {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+}
+
+/* ─── Focus visible ─── */
+
+:focus-visible {
+  outline: 2px solid var(--pt-pink);
+  outline-offset: 2px;
+}
+
+/* ─── Custom Tailwind utilities ─── */
+
+@utility duration-350 {
+  transition-duration: 350ms;
+}
+
+@utility duration-400 {
+  transition-duration: 400ms;
+}
+
+@utility duration-250 {
+  transition-duration: 250ms;
+}
+
+@utility duration-220 {
+  transition-duration: 220ms;
 }
