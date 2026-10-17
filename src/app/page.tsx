@@ -4,7 +4,7 @@ import SignatureCollections from "@/components/sections/SignatureCollections";
 import FeaturedEditorial from "@/components/sections/FeaturedEditorial";
 import StyleStories from "@/components/sections/StyleStories";
 import LatestTrendsTeaser from "@/components/sections/LatestTrendsTeaser";
-import VisitBoutique from "@/components/sections/VisitBoutique";
+import VisitOurStore from "@/components/sections/VisitOurStore";
 
 /**
  * Pari Trends — Homepage
@@ -15,7 +15,8 @@ import VisitBoutique from "@/components/sections/VisitBoutique";
  * Phase 04: Signature Collections lookbook showcase.
  * Phase 05: Worth Your Attention horizontal accordion showcase.
  * Phase 06: Cinematic Style Stories interactive lookbook stage.
- * Production Deploy: Refined Latest Trends & Visit Us Boutique sections.
+ * Phase 07: Latest Trends teaser showcase.
+ * Phase 08: Visit Our Store boutique invitation experience.
  */
 export default function Home() {
   return (
@@ -38,8 +39,8 @@ export default function Home() {
       {/* ─── Latest Trends ─── */}
       <LatestTrendsTeaser />
 
-      {/* ─── Visit Us Boutique ─── */}
-      <VisitBoutique />
+      {/* ─── Visit Our Store ─── */}
+      <VisitOurStore />
     </main>
   );
 }
