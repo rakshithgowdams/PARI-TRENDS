@@ -20,7 +20,7 @@ import VisitOurStore from "@/components/sections/VisitOurStore";
  */
 export default function Home() {
   return (
-    <main className="flex flex-col">
+    <main className="flex-1 flex flex-col w-full">
       {/* ─── Phase 02: Scrollytelling Hero ─── */}
       <HeroScrollytelling />
 

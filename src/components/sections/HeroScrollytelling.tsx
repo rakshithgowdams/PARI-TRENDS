@@ -72,13 +72,19 @@ export default function HeroScrollytelling() {
   const [videoError, setVideoError] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  // Check reduced-motion preference on mount
+  // Check reduced-motion preference and cached video readiness on mount
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mq.matches);
 
     const onChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mq.addEventListener("change", onChange);
+
+    const video = videoRef.current;
+    if (video && video.readyState >= 1) {
+      setVideoLoaded(true);
+    }
+
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
@@ -92,10 +98,15 @@ export default function HeroScrollytelling() {
 
     let rafId: number | null = null;
     let isSeeking = false;
+    let seekSafetyTimer: number | null = null;
     let targetTime = 0;
 
     const handleSeeked = () => {
       isSeeking = false;
+      if (seekSafetyTimer !== null) {
+        window.clearTimeout(seekSafetyTimer);
+        seekSafetyTimer = null;
+      }
     };
     video.addEventListener("seeked", handleSeeked);
 
@@ -293,21 +304,29 @@ export default function HeroScrollytelling() {
       updateTypographyAndGradients(progress);
 
       // Seek video if metadata is ready and duration is valid
-      if (video.duration && !isNaN(video.duration) && video.duration > 0) {
-        // Clamp to last valid frame before the exact end to prevent browser freeze/black frame
-        const safeDuration = Math.max(0, video.duration - 0.05);
+      if (
+        video.readyState >= 1 &&
+        video.duration &&
+        !isNaN(video.duration) &&
+        video.duration > 0
+      ) {
+        // Clamp to safe duration before the exact end to prevent browser freeze/black frame
+        const safeDuration = Math.max(0, video.duration - 0.15);
         targetTime = Math.min(progress * safeDuration, safeDuration);
 
         // Seek only if difference is visible (> 30ms) and not currently blocked
         if (Math.abs(video.currentTime - targetTime) > 0.03 && !isSeeking) {
           isSeeking = true;
+          if (seekSafetyTimer !== null) {
+            window.clearTimeout(seekSafetyTimer);
+          }
+          // Safety timeout (120ms) so isSeeking is never permanently locked
+          seekSafetyTimer = window.setTimeout(() => {
+            isSeeking = false;
+          }, 120);
+
           try {
-            const seekableVideo = video as HTMLVideoElement & { fastSeek?: (time: number) => void };
-            if (typeof seekableVideo.fastSeek === "function") {
-              seekableVideo.fastSeek(targetTime);
-            } else {
-              video.currentTime = targetTime;
-            }
+            video.currentTime = targetTime;
           } catch {
             isSeeking = false;
           }
@@ -331,6 +350,7 @@ export default function HeroScrollytelling() {
 
     return () => {
       if (rafId !== null) window.cancelAnimationFrame(rafId);
+      if (seekSafetyTimer !== null) window.clearTimeout(seekSafetyTimer);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
       video.removeEventListener("seeked", handleSeeked);
@@ -419,13 +439,14 @@ export default function HeroScrollytelling() {
           />
         </video>
 
-        {/* Fallback poster image if video fails to load */}
-        {videoError && (
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
-          />
-        )}
+        {/* High-fidelity background poster — displayed until video frame renders, or as permanent fallback on error */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
+            videoLoaded && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+          style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
+          aria-hidden="true"
+        />
 
         {/* ─── Static Vignettes for Fixed Navbar & Upcoming Section Transitions ─── */}
         <div
@@ -507,7 +528,7 @@ export default function HeroScrollytelling() {
         {/* ─── SCENE 02: COLLECTION DISCOVERY (Right-aligned, right side of viewport) ─── */}
         <div
           ref={s2GroupRef}
-          className="absolute inset-0 z-20 flex items-center justify-start sm:justify-end px-6 sm:px-10 lg:px-[7vw] pt-12 sm:pt-0 pointer-events-none"
+          className="absolute inset-0 z-20 flex items-end sm:items-center justify-start sm:justify-end px-6 sm:px-10 lg:px-[7vw] pb-24 sm:pb-0 pointer-events-none"
           style={{ opacity: 0 }}
           aria-hidden="true"
         >

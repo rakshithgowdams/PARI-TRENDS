@@ -98,15 +98,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${manrope.variable} h-full antialiased`}
+      className={`${playfair.variable} ${manrope.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#F8F2EA] text-[#1E1A17]">
+      <body className="min-h-screen flex flex-col bg-[#F8F2EA] text-[#1E1A17]">
         <SiteHeader />
-        <div className="flex-1">{children}</div>
+        {children}
         <SiteFooter />
       </body>
     </html>
