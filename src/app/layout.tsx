@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/layout/SiteHeader";
+import SiteFooter from "@/components/layout/SiteFooter";
+import { siteConfig } from "@/config/site";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -24,9 +26,69 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Pari Trends — Women's Fashion Boutique | Alur, Hassan",
-  description:
-    "Pari Trends is a premium women's fashion boutique in Alur, Hassan, Karnataka. Explore curated ethnic and contemporary collections, latest trends, and exclusive designer wear.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: "Pari Trends — Women's Fashion Boutique | Alur, Hassan",
+    template: "%s | Pari Trends",
+  },
+  description: siteConfig.description,
+  keywords: [
+    "Pari Trends",
+    "Women's Fashion Boutique",
+    "Alur Hassan Boutique",
+    "Ethnic Wear Karnataka",
+    "Kurti Sets Alur",
+    "Designer Co-ords",
+    "Dupatta Sets",
+    "Party Wear Dresses",
+    "Indian Fashion Alur",
+    "Modest Nightwear",
+    "Women Fashion Showroom Hassan",
+  ],
+  authors: [{ name: "Pari Trends" }],
+  creator: "Pari Trends",
+  publisher: "Pari Trends",
+  formatDetection: {
+    email: false,
+    address: true,
+    telephone: true,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Pari Trends — Women's Fashion Boutique | Alur, Hassan",
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: "Pari Trends",
+    locale: "en_IN",
+    type: "website",
+    images: [
+      {
+        url: "/brand/pari-trends-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Pari Trends Women's Fashion Boutique Showroom in Alur, Hassan",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pari Trends — Women's Fashion Boutique | Alur, Hassan",
+    description: siteConfig.description,
+    images: ["/brand/pari-trends-logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -44,8 +106,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-[#F8F2EA] text-[#1E1A17]">
         <SiteHeader />
-        {children}
+        <div className="flex-1">{children}</div>
+        <SiteFooter />
       </body>
     </html>
   );
 }
+

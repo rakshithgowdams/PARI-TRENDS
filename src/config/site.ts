@@ -9,18 +9,21 @@ export const siteConfig = {
   name: "Pari Trends",
   tagline: "WOMEN'S FASHION",
   description:
-    "Premium women's fashion boutique in Alur, Hassan, Karnataka. Curated ethnic and contemporary collections.",
+    "Premium women's fashion boutique in Alur, Hassan, Karnataka. Curated ethnic and contemporary collections, signature kurtis, designer co-ords, and festive wear.",
   location: "Alur, Hassan, Karnataka",
+  address: "Boutique Showroom, Main Road, Alur, Hassan District, Karnataka 573213",
+  timings: "Monday – Sunday • 10:00 AM – 9:00 PM",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://paritrends.com",
 
   /** Logo asset path – must point to the original client-supplied logo. */
   logo: "/brand/pari-trends-logo.png",
 
   /**
    * WhatsApp number in international format (e.g. "919876543210").
-   * Set to `null` until the real number is provided by the client.
-   * When null, the CTA button links to the #visit section instead.
+   * Can be configured via NEXT_PUBLIC_WHATSAPP_NUMBER environment variable.
+   * When null, CTA buttons link to the #visit section instead.
    */
-  whatsapp: null as string | null,
+  whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || null) as string | null,
 
   /** Pre-filled WhatsApp greeting. */
   whatsappMessage:
@@ -35,3 +38,4 @@ export const siteConfig = {
     return "#visit";
   },
 } as const;
+

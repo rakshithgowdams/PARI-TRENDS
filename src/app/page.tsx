@@ -3,6 +3,8 @@ import AboutPariTrends from "@/components/sections/AboutPariTrends";
 import SignatureCollections from "@/components/sections/SignatureCollections";
 import FeaturedEditorial from "@/components/sections/FeaturedEditorial";
 import StyleStories from "@/components/sections/StyleStories";
+import LatestTrendsTeaser from "@/components/sections/LatestTrendsTeaser";
+import VisitBoutique from "@/components/sections/VisitBoutique";
 
 /**
  * Pari Trends — Homepage
@@ -13,6 +15,7 @@ import StyleStories from "@/components/sections/StyleStories";
  * Phase 04: Signature Collections lookbook showcase.
  * Phase 05: Worth Your Attention horizontal accordion showcase.
  * Phase 06: Cinematic Style Stories interactive lookbook stage.
+ * Production Deploy: Refined Latest Trends & Visit Us Boutique sections.
  */
 export default function Home() {
   return (
@@ -32,37 +35,12 @@ export default function Home() {
       {/* ─── Phase 06: Cinematic Style Stories ─── */}
       <StyleStories />
 
-      {/* ─── Future section anchors & smooth release ─── */}
-      {(
-        [
-          { id: "trends", label: "Latest Trends" },
-          { id: "visit", label: "Visit Us" },
-        ] as const
-      ).map((section, i) => (
-        <section
-          key={section.id}
-          id={section.id}
-          className="min-h-[70vh] flex items-center justify-center border-t border-[#EFE4D6]"
-          style={{
-            background:
-              i % 2 === 0
-                ? "#F8F2EA"
-                : "linear-gradient(180deg, #F8F2EA 0%, #EFE4D6 100%)",
-          }}
-        >
-          <div className="text-center px-6">
-            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-[#C89A2D] mb-2">
-              Coming in Future Phases
-            </p>
-            <h2 className="font-serif text-2xl sm:text-3xl text-[#1E1A17]/80">
-              {section.label}
-            </h2>
-            <p className="mt-2 text-sm text-[#6B5B52]/60">
-              Section #{section.id}
-            </p>
-          </div>
-        </section>
-      ))}
+      {/* ─── Latest Trends ─── */}
+      <LatestTrendsTeaser />
+
+      {/* ─── Visit Us Boutique ─── */}
+      <VisitBoutique />
     </main>
   );
 }
+

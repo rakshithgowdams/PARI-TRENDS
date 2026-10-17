@@ -60,10 +60,6 @@ export default function SignatureCollections() {
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
-  // Separate row 1 and row 2 for stagger mapping
-  const row1Items = COLLECTIONS_DATA.filter((item) => item.row === 1);
-  const row2Items = COLLECTIONS_DATA.filter((item) => item.row === 2);
-
   return (
     <section
       id="collections"

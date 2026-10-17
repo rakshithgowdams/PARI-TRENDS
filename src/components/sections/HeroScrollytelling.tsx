@@ -302,8 +302,9 @@ export default function HeroScrollytelling() {
         if (Math.abs(video.currentTime - targetTime) > 0.03 && !isSeeking) {
           isSeeking = true;
           try {
-            if ("fastSeek" in video && typeof (video as any).fastSeek === "function") {
-              (video as any).fastSeek(targetTime);
+            const seekableVideo = video as HTMLVideoElement & { fastSeek?: (time: number) => void };
+            if (typeof seekableVideo.fastSeek === "function") {
+              seekableVideo.fastSeek(targetTime);
             } else {
               video.currentTime = targetTime;
             }
