@@ -29,6 +29,12 @@ export const siteConfig = {
   whatsappMessage:
     "Hi Pari Trends! I'd love to know more about your latest collections.",
 
+  /** Verified Pari Trends Instagram profile */
+  instagram: "https://www.instagram.com/alur_pari_trends/",
+
+  /** Google Maps search URL */
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Pari+Trends+Alur+Hassan+Karnataka",
+
   /** Build the WhatsApp deep-link or fall back to #visit. */
   get whatsappUrl(): string {
     if (this.whatsapp) {
