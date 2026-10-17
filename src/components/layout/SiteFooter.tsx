@@ -49,7 +49,7 @@ export default function SiteFooter() {
 
   return (
     <footer
-      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] border-t border-[#EFE4D6] overflow-hidden min-h-[680px] lg:min-h-[760px] flex flex-col justify-between"
+      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] border-t border-[#EFE4D6] overflow-hidden min-h-[720px] lg:min-h-[820px] flex flex-col justify-between"
       aria-label="Pari Trends Site Footer"
     >
       {/* ─── 1. Upper Content Zone: 5-Column Editorial Navigation ─── */}

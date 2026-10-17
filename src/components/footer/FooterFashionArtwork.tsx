@@ -15,35 +15,35 @@ import Image from "next/image";
 export default function FooterFashionArtwork() {
   return (
     <div
-      className="absolute inset-x-0 bottom-0 pointer-events-none select-none overflow-hidden h-[280px] sm:h-[350px] md:h-[420px] lg:h-[480px] z-0"
+      className="absolute inset-x-0 bottom-0 pointer-events-none select-none overflow-hidden h-[340px] sm:h-[440px] md:h-[520px] lg:h-[600px] xl:h-[640px] z-0"
       aria-hidden="true"
     >
       {/* ─── 1. Top Edge Seamless Gradient Fade into #F8F2EA ─── */}
-      <div className="absolute inset-x-0 top-0 h-32 sm:h-44 bg-gradient-to-b from-[#F8F2EA] via-[#F8F2EA]/85 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-24 sm:h-36 bg-gradient-to-b from-[#F8F2EA] via-[#F8F2EA]/75 to-transparent z-10 pointer-events-none" />
 
       {/* ─── 2. Responsive Web-Optimized Campaign Artwork ─── */}
       <div
         className="relative w-full h-full"
         style={{
           maskImage:
-            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 12%, rgba(0,0,0,0.9) 30%, black 50%)",
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.85) 20%, black 32%)",
           WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 12%, rgba(0,0,0,0.9) 30%, black 50%)",
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.85) 20%, black 32%)",
         }}
       >
         <Image
           src="/images/footer/pari-trends-editorial-footer.webp"
-          alt=""
+          alt="Pari Trends luxury Indian ethnic campaign featuring models in bespoke lehengas and sarees"
           fill
           sizes="(max-width: 1024px) 100vw, 1920px"
           className="object-cover object-bottom transition-opacity duration-700 ease-out"
-          quality={90}
+          quality={95}
         />
       </div>
 
       {/* ─── 3. Subtle Warm Ambient Studio Vignette on Left & Right ─── */}
-      <div className="absolute inset-y-0 left-0 w-16 sm:w-32 bg-gradient-to-r from-[#F8F2EA]/90 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-16 sm:w-32 bg-gradient-to-l from-[#F8F2EA]/90 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 left-0 w-12 sm:w-28 bg-gradient-to-r from-[#F8F2EA]/85 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-12 sm:w-28 bg-gradient-to-l from-[#F8F2EA]/85 to-transparent pointer-events-none z-10" />
     </div>
   );
 }
