@@ -179,7 +179,7 @@ export default function SignatureCollections() {
                   }`}
                   style={{ transitionDelay: `${delay}ms` }}
                 >
-                  <CollectionCard collection={collection} priority={index < 2} />
+                  <CollectionCard collection={collection} priority={false} />
                 </div>
               );
             })}

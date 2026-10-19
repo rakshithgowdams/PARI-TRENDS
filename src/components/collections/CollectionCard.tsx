@@ -43,7 +43,7 @@ export default function CollectionCard({
           alt={collection.alt}
           fill
           priority={priority}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+          sizes="(max-width: 640px) 84vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           className="object-cover object-center transform scale-100 transition-transform duration-700 ease-out will-change-transform group-hover:scale-[1.04]"
         />
       </div>

@@ -17,43 +17,64 @@ export function useActiveSection(): string {
 
   useEffect(() => {
     let rafId: number | null = null;
+    let cachedFocalY = 200;
+    let cachedSections: { id: string; top: number; bottom: number }[] = [];
+    let currentActive = "home";
 
-    const checkActiveSection = () => {
-      // If user is at the very top of the page
-      if (window.scrollY < 120) {
-        setActive("home");
-        return;
-      }
-
+    const measureSections = () => {
       const header = document.querySelector("header");
       const navbarHeight = header?.offsetHeight ?? 80;
-      // Focal point for reader attention: ~120px below navbar
-      const focalY = navbarHeight + 120;
+      cachedFocalY = navbarHeight + 120;
 
+      const scrollY = window.scrollY;
       const elements = sectionIds
         .map((id) => ({ id, el: document.getElementById(id) }))
         .filter((item): item is { id: string; el: HTMLElement } => Boolean(item.el));
 
-      // Check which section bounding rect encompasses focalY
-      for (const { id, el } of elements) {
+      cachedSections = elements.map(({ id, el }) => {
         const rect = el.getBoundingClientRect();
-        if (rect.top <= focalY && rect.bottom > focalY) {
-          setActive(id);
+        const top = scrollY + rect.top;
+        const bottom = top + rect.height;
+        return { id, top, bottom };
+      });
+    };
+
+    const checkActiveSection = () => {
+      const scrollY = window.scrollY;
+
+      // If user is at the very top of the page
+      if (scrollY < 120) {
+        if (currentActive !== "home") {
+          currentActive = "home";
+          setActive("home");
+        }
+        return;
+      }
+
+      const focalPoint = scrollY + cachedFocalY;
+
+      // Fast numeric lookup with zero DOM calls
+      for (const section of cachedSections) {
+        if (section.top <= focalPoint && section.bottom > focalPoint) {
+          if (currentActive !== section.id) {
+            currentActive = section.id;
+            setActive(section.id);
+          }
           return;
         }
       }
 
       // If past all sections (e.g. at the bottom footer), default to last section
-      const last = elements[elements.length - 1];
-      if (last) {
-        const rect = last.el.getBoundingClientRect();
-        if (rect.bottom <= focalY) {
+      const last = cachedSections[cachedSections.length - 1];
+      if (last && last.bottom <= focalPoint) {
+        if (currentActive !== last.id) {
+          currentActive = last.id;
           setActive(last.id);
         }
       }
     };
 
-    const onScrollOrResize = () => {
+    const onScroll = () => {
       if (rafId !== null) return;
       rafId = window.requestAnimationFrame(() => {
         checkActiveSection();
@@ -61,13 +82,28 @@ export function useActiveSection(): string {
       });
     };
 
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    const onResize = () => {
+      measureSections();
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        checkActiveSection();
+        rafId = null;
+      });
+    };
+
+    measureSections();
     checkActiveSection();
 
+    // Re-measure after initial layout settles
+    const t1 = setTimeout(measureSections, 500);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+
     return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      clearTimeout(t1);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
       if (rafId !== null) window.cancelAnimationFrame(rafId);
     };
   }, []);

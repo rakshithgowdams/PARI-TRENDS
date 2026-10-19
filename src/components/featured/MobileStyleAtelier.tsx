@@ -119,8 +119,8 @@ export default function MobileStyleAtelier({
     <div className="w-full flex flex-col items-center select-none">
       {/* ─── Hidden Preloaders for Instant Transitions ─── */}
       <div className="hidden" aria-hidden="true">
-        {prevImg && <Image src={prevImg} alt="" width={400} height={500} priority />}
-        {nextImg && <Image src={nextImg} alt="" width={400} height={500} priority />}
+        {prevImg && <Image src={prevImg} alt="" width={400} height={500} loading="lazy" />}
+        {nextImg && <Image src={nextImg} alt="" width={400} height={500} loading="lazy" />}
       </div>
 
       {/* ─── Main Fashion Stage ─── */}
@@ -136,7 +136,7 @@ export default function MobileStyleAtelier({
               src={previousEdit.image}
               alt={previousEdit.alt}
               fill
-              sizes="(max-width: 640px) 100vw, 600px"
+              sizes="(max-width: 640px) 92vw, 560px"
               className={`object-cover ${previousEdit.aspectFocus || "object-center"} transition-all duration-500 ease-out opacity-0 scale-[0.985]`}
             />
           </div>
@@ -155,8 +155,7 @@ export default function MobileStyleAtelier({
             src={activeEdit.image}
             alt={activeEdit.alt}
             fill
-            priority
-            sizes="(max-width: 640px) 100vw, 600px"
+            sizes="(max-width: 640px) 92vw, 560px"
             className={`object-cover ${activeEdit.aspectFocus || "object-center"} will-change-transform`}
           />
         </div>

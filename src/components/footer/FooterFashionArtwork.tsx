@@ -67,7 +67,7 @@ export default function FooterFashionArtwork() {
           fill
           sizes="(max-width: 1024px) 100vw, 1920px"
           className="object-cover object-bottom transition-opacity duration-700 ease-out"
-          quality={95}
+          quality={85}
         />
       </div>
 

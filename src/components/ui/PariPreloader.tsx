@@ -13,18 +13,13 @@ export default function PariPreloader() {
   const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Detect Lighthouse / PageSpeed audit crawlers
-    const isAuditBot =
-      typeof navigator !== "undefined" &&
-      /Lighthouse|PageSpeed|Chrome-Lighthouse/i.test(navigator.userAgent);
-
     const isDirectAnchor =
       typeof window !== "undefined" &&
       window.location.hash &&
       window.location.hash.length > 1 &&
       window.location.hash !== "#home";
 
-    if (isAuditBot || isDirectAnchor) {
+    if (isDirectAnchor) {
       setShouldRender(false);
       setIsFinished(true);
       return;
@@ -49,11 +44,11 @@ export default function PariPreloader() {
       if (isDismissed) return;
 
       if (currentPercent < 92) {
-        currentPercent += Math.floor(Math.random() * 8) + 6;
+        currentPercent += Math.floor(Math.random() * 9) + 7;
         if (currentPercent > 92) currentPercent = 92;
         setProgress(currentPercent);
       }
-    }, 60);
+    }, 45);
 
     const finishSequence = () => {
       if (isDismissed) return;
@@ -68,14 +63,14 @@ export default function PariPreloader() {
 
         exitTimeoutRef.current = setTimeout(() => {
           setIsFinished(true);
-        }, 850);
-      }, 250);
+        }, 650);
+      }, 150);
     };
 
-    // Allow all phase animations (A, B, C, D) to complete gracefully (~1.35s)
+    // Allow all phase animations (A, B, C, D) to complete gracefully (~850ms)
     const targetDurationTimer = setTimeout(() => {
       finishSequence();
-    }, 1350);
+    }, 850);
 
     return () => {
       clearInterval(progressInterval);

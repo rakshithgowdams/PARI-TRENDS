@@ -15,7 +15,7 @@
   touch-action: none;
   pointer-events: auto;
   will-change: transform;
-  transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 650ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 .overlay.exiting {
@@ -65,7 +65,7 @@
 .ringCircle {
   stroke-dasharray: 295.31;
   stroke-dashoffset: 295.31;
-  animation: drawRing 1000ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: drawRing 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes drawRing {
@@ -80,7 +80,7 @@
 /* ─── Phase B: Logo Medallion Appearance ─── */
 
 .logoMedallion {
-  animation: revealLogo 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: revealLogo 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes revealLogo {
@@ -97,7 +97,7 @@
 /* ─── Phase C: Brand Typography Reveal ─── */
 
 .brandName {
-  animation: revealBrand 650ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+  animation: revealBrand 500ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both;
 }
 
 @keyframes revealBrand {
@@ -112,7 +112,7 @@
 }
 
 .brandDivider {
-  animation: revealDivider 600ms cubic-bezier(0.16, 1, 0.3, 1) 350ms both;
+  animation: revealDivider 450ms cubic-bezier(0.16, 1, 0.3, 1) 250ms both;
 }
 
 @keyframes revealDivider {
@@ -127,7 +127,7 @@
 }
 
 .taglineText {
-  animation: revealTagline 600ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both;
+  animation: revealTagline 450ms cubic-bezier(0.16, 1, 0.3, 1) 320ms both;
 }
 
 @keyframes revealTagline {
@@ -149,7 +149,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 22px;
-  animation: revealProgress 400ms ease-out 500ms both;
+  animation: revealProgress 350ms ease-out 350ms both;
 }
 
 @keyframes revealProgress {

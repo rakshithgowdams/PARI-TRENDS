@@ -74,6 +74,7 @@ export default function FooterNavigation() {
                   src={siteConfig.logo}
                   alt={siteConfig.name}
                   fill
+                  sizes="48px"
                   className="object-cover"
                 />
               </div>

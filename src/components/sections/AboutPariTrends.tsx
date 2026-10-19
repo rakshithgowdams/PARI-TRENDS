@@ -23,9 +23,10 @@ import { ArrowUpRight } from "lucide-react";
  */
 export default function AboutPariTrends() {
   const sectionRef = useRef<HTMLElement>(null);
+  const compositionWrapperRef = useRef<HTMLDivElement>(null);
+  const embroideryBadgeRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [parallaxOffset, setParallaxOffset] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -62,23 +63,53 @@ export default function AboutPariTrends() {
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
-  // Subtle restrained parallax (15-20px) for the editorial portrait
+  // Subtle restrained parallax for the editorial portrait & badge via direct transform (0 React re-renders)
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const handleScroll = () => {
-      const section = sectionRef.current;
-      if (!section) return;
+    let rafId: number | null = null;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let cachedSectionTop = 0;
+    let cachedSectionHeight = 0;
+    let cachedVh = window.innerHeight;
+
+    const measureLayout = () => {
+      cachedVh = window.innerHeight;
       const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight;
-      if (rect.top < vh && rect.bottom > 0) {
-        const progress = (vh - rect.top) / (vh + rect.height);
-        setParallaxOffset((progress - 0.5) * 22); // ~ -11px to +11px
-      }
+      cachedSectionTop = window.scrollY + rect.top;
+      cachedSectionHeight = rect.height;
+    };
+    measureLayout();
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const scrollY = window.scrollY;
+        const relativeTop = cachedSectionTop - scrollY;
+
+        if (relativeTop < cachedVh && relativeTop + cachedSectionHeight > 0) {
+          const progress = (cachedVh - relativeTop) / (cachedVh + cachedSectionHeight);
+          const offset = (progress - 0.5) * 22; // ~ -11px to +11px
+          if (compositionWrapperRef.current) {
+            compositionWrapperRef.current.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+          }
+          if (embroideryBadgeRef.current) {
+            embroideryBadgeRef.current.style.transform = `translate3d(0, ${(-offset * 0.4).toFixed(1)}px, 0)`;
+          }
+        }
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", measureLayout, { passive: true });
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureLayout);
+    };
   }, [prefersReducedMotion]);
 
   return (
@@ -239,10 +270,8 @@ export default function AboutPariTrends() {
 
             {/* Composition Wrapper with Subtle Parallax */}
             <div
-              className="relative w-full max-w-[450px] lg:max-w-[480px] transition-transform duration-700 ease-out will-change-transform"
-              style={{
-                transform: prefersReducedMotion ? "none" : `translateY(${parallaxOffset}px)`,
-              }}
+              ref={compositionWrapperRef}
+              className="relative w-full max-w-[450px] lg:max-w-[480px] will-change-transform"
             >
 
               {/* Architectural Offset Backing Shape (#EFE4D6) */}
@@ -264,7 +293,7 @@ export default function AboutPariTrends() {
                   src="/images/pari-trends-about-editorial.jpg"
                   alt="Pari Trends curated contemporary ethnic fashion collection"
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 480px"
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 50vw, 480px"
                   className="object-cover object-top transition-transform duration-700 ease-out hover:scale-[1.02]"
                 />
 
@@ -276,19 +305,19 @@ export default function AboutPariTrends() {
 
               {/* Overlapping Garment Embroidery Detail Crop (Bottom-Left) */}
               <div
+                ref={embroideryBadgeRef}
                 className={`absolute -bottom-6 -left-3 sm:-bottom-8 sm:-left-8 lg:-left-10
                   w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44
                   rounded-xl overflow-hidden bg-[#F8F2EA] p-1.5 sm:p-2
                   shadow-[0_16px_36px_rgba(30,26,23,0.13)]
                   ring-1 ring-[#C89A2D]/35 z-20 group
-                  transition-all duration-800 ease-out ${
+                  transition-opacity duration-800 ease-out will-change-transform ${
                     isVisible || prefersReducedMotion
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-6"
+                      ? "opacity-100"
+                      : "opacity-0"
                   }`}
                 style={{
                   transitionDelay: prefersReducedMotion ? "0ms" : "650ms",
-                  transform: prefersReducedMotion ? undefined : `translateY(${-parallaxOffset * 0.4}px)`,
                 }}
               >
                 <div className="relative w-full h-full rounded-lg overflow-hidden bg-[#EFE4D6]">

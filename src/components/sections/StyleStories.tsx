@@ -36,31 +36,43 @@ export default function StyleStories() {
   }, []);
 
   const enableStickyScroll = !prefersReducedMotion;
+  const activeIndexRef = useRef(0);
 
   useEffect(() => {
     if (!enableStickyScroll) return;
 
     let rafId: number | null = null;
+    let cachedNavbarHeight = 80;
+    let cachedStageHeight = 600;
+    let cachedTotalScrollable = 1;
+    let cachedContainerTop = 0;
+
+    const measureLayout = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const header = document.querySelector("header");
+      cachedNavbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
+      cachedStageHeight = window.innerHeight - cachedNavbarHeight;
+      cachedTotalScrollable = Math.max(1, container.offsetHeight - cachedStageHeight);
+      cachedContainerTop = window.scrollY + container.getBoundingClientRect().top;
+    };
 
     const handleScroll = () => {
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
         rafId = null;
-        const container = containerRef.current;
-        if (!container) return;
 
-        const rect = container.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const header = document.querySelector("header");
-        const navbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
-        const stageHeight = vh - navbarHeight;
-        const totalScrollable = container.offsetHeight - stageHeight;
-        if (totalScrollable <= 0) return;
+        // Position relative to sticky boundary using scrollY (0 DOM queries)
+        const scrolled = window.scrollY - (cachedContainerTop - cachedNavbarHeight);
 
-        // Progress based on container's top position relative to sticky navbar boundary
-        const scrolled = navbarHeight - rect.top;
-        const progress = Math.min(Math.max(scrolled / totalScrollable, 0), 1);
+        // Early return if offscreen
+        if (scrolled < -cachedStageHeight - 80 || scrolled > cachedTotalScrollable + cachedStageHeight + 80) {
+          return;
+        }
+
+        const progress = Math.min(Math.max(scrolled / cachedTotalScrollable, 0), 1);
 
         // Map progress [0, 1] across the 6 chapters
         const chapterCount = STYLE_STORIES.length;
@@ -69,15 +81,25 @@ export default function StyleStories() {
           Math.floor(progress * chapterCount)
         );
 
-        setActiveIndex(index);
+        if (index !== activeIndexRef.current) {
+          activeIndexRef.current = index;
+          setActiveIndex(index);
+        }
       });
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    measureLayout();
     handleScroll();
 
+    const t1 = setTimeout(measureLayout, 500);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", measureLayout, { passive: true });
+
     return () => {
+      clearTimeout(t1);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureLayout);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [enableStickyScroll]);

@@ -121,6 +121,7 @@ export default function LatestTrendsTeaser() {
   }, []);
 
   const enableStickyScroll = isDesktop && !prefersReducedMotion;
+  const activeIndexRef = useRef(0);
 
   // Reveal animations
   useEffect(() => {
@@ -154,26 +155,37 @@ export default function LatestTrendsTeaser() {
     if (!enableStickyScroll) return;
 
     let rafId: number | null = null;
+    let cachedNavbarHeight = 80;
+    let cachedStageHeight = 600;
+    let cachedTotalScrollable = 1;
+    let cachedSectionTop = 0;
+
+    const measureLayout = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const header = document.querySelector("header");
+      cachedNavbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
+      cachedStageHeight = window.innerHeight - cachedNavbarHeight;
+      cachedTotalScrollable = Math.max(1, section.offsetHeight - cachedStageHeight);
+      cachedSectionTop = window.scrollY + section.getBoundingClientRect().top;
+    };
 
     const handleScroll = () => {
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
         rafId = null;
-        const section = sectionRef.current;
-        if (!section) return;
 
-        const rect = section.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const header = document.querySelector("header");
-        const navbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
-        const stageHeight = vh - navbarHeight;
-        const totalScrollable = section.offsetHeight - stageHeight;
-        if (totalScrollable <= 0) return;
+        // Position relative to sticky boundary using scrollY (0 DOM queries)
+        const scrolled = window.scrollY - (cachedSectionTop - cachedNavbarHeight);
 
-        // Progress calculation based on section top relative to navbar boundary
-        const scrolled = navbarHeight - rect.top;
-        const progress = Math.min(Math.max(scrolled / totalScrollable, 0), 1);
+        // Early return if offscreen
+        if (scrolled < -cachedStageHeight - 80 || scrolled > cachedTotalScrollable + cachedStageHeight + 80) {
+          return;
+        }
+
+        const progress = Math.min(Math.max(scrolled / cachedTotalScrollable, 0), 1);
 
         // Map progress across the 7 silhouettes
         const categoryCount = TREND_CATEGORIES.length;
@@ -182,15 +194,25 @@ export default function LatestTrendsTeaser() {
           Math.floor(progress * categoryCount)
         );
 
-        setActiveIndex(index);
+        if (index !== activeIndexRef.current) {
+          activeIndexRef.current = index;
+          setActiveIndex(index);
+        }
       });
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    measureLayout();
     handleScroll();
 
+    const t1 = setTimeout(measureLayout, 500);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", measureLayout, { passive: true });
+
     return () => {
+      clearTimeout(t1);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureLayout);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [enableStickyScroll]);
@@ -413,8 +435,8 @@ export default function LatestTrendsTeaser() {
                           src={cat.image}
                           alt={cat.alt}
                           fill
-                          sizes="(max-width: 640px) 100vw, 450px"
-                          priority={idx <= 2}
+                          sizes="(max-width: 640px) 92vw, 450px"
+                          priority={false}
                           className={`object-cover object-center transform transition-transform duration-700 ease-out group-hover:scale-[1.03] ${
                             isActive ? "scale-100" : "scale-105"
                           }`}

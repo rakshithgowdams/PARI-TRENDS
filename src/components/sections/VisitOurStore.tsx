@@ -75,10 +75,10 @@ const SHOWROOM_SCENES: ShowroomScene[] = [
  */
 export default function VisitOurStore() {
   const sectionRef = useRef<HTMLElement>(null);
+  const galleryParallaxRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [parallaxY, setParallaxY] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -115,24 +115,50 @@ export default function VisitOurStore() {
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
-  // Subtle parallax inside the showroom gallery image (approx 15-20px range)
+  // Subtle parallax inside the showroom gallery image via direct DOM transform (0 React re-renders)
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const handleScroll = () => {
-      const section = sectionRef.current;
-      if (!section) return;
+    let rafId: number | null = null;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let cachedSectionTop = 0;
+    let cachedSectionHeight = 0;
+    let cachedVh = window.innerHeight;
+
+    const measureLayout = () => {
+      cachedVh = window.innerHeight;
       const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      if (rect.top < viewportHeight && rect.bottom > 0) {
-        const progress = (viewportHeight - rect.top) / (viewportHeight + rect.height);
-        const offset = (progress - 0.5) * 24; // Range ~ -12px to +12px
-        setParallaxY(offset);
-      }
+      cachedSectionTop = window.scrollY + rect.top;
+      cachedSectionHeight = rect.height;
+    };
+    measureLayout();
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const scrollY = window.scrollY;
+        const relativeTop = cachedSectionTop - scrollY;
+
+        if (relativeTop < cachedVh && relativeTop + cachedSectionHeight > 0) {
+          const progress = (cachedVh - relativeTop) / (cachedVh + cachedSectionHeight);
+          const offset = (progress - 0.5) * 24; // Range ~ -12px to +12px
+          if (galleryParallaxRef.current) {
+            galleryParallaxRef.current.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+          }
+        }
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", measureLayout, { passive: true });
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureLayout);
+    };
   }, [prefersReducedMotion]);
 
   const activeScene = SHOWROOM_SCENES[activeSceneIndex];
@@ -307,34 +333,36 @@ export default function VisitOurStore() {
               {/* Main Architectural Stage */}
               <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-[4px] overflow-hidden border border-[#EFE4D6] bg-[#1E1A17] shadow-lg shadow-black/5">
                 
-                {/* Crossfading Scenes */}
-                {SHOWROOM_SCENES.map((scene, index) => {
-                  const isActive = index === activeSceneIndex;
-                  return (
-                    <div
-                      key={scene.id}
-                      className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                        isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-                      }`}
-                    >
+                {/* Parallax Container */}
+                <div ref={galleryParallaxRef} className="relative w-full h-full will-change-transform">
+                  {/* Crossfading Scenes */}
+                  {SHOWROOM_SCENES.map((scene, index) => {
+                    const isActive = index === activeSceneIndex;
+                    return (
                       <div
-                        className="relative w-full h-full transform transition-transform duration-700 ease-out"
-                        style={{
-                          transform: `translateY(${parallaxY}px) scale(${isActive ? 1.02 : 1})`,
-                        }}
+                        key={scene.id}
+                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                          isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                        }`}
                       >
-                        <Image
-                          src={scene.image}
-                          alt={scene.alt}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 850px"
-                          priority={index === 0}
-                          className="object-cover object-center"
-                        />
+                        <div
+                          className={`relative w-full h-full transform transition-transform duration-700 ease-out ${
+                            isActive ? "scale-[1.02]" : "scale-100"
+                          }`}
+                        >
+                          <Image
+                            src={scene.image}
+                            alt={scene.alt}
+                            fill
+                            sizes="(max-width: 1024px) 94vw, 750px"
+                            priority={false}
+                            className="object-cover object-center"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
 
                 {/* Subtle Ambient Vignette for text contrast */}
                 <div

@@ -35,6 +35,23 @@ export default function MobileCollectionsScrollytelling({
 
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const activeIdxRef = useRef(0);
+  const layoutMetricsRef = useRef<{
+    navbarHeight: number;
+    stageHeight: number;
+    totalScrollable: number;
+    viewportWidth: number;
+    maxTravel: number;
+    runwayTop: number;
+    cards: { offsetLeft: number; offsetWidth: number }[];
+  }>({
+    navbarHeight: 76,
+    stageHeight: 0,
+    totalScrollable: 0,
+    viewportWidth: 0,
+    maxTravel: 0,
+    runwayTop: 0,
+    cards: [],
+  });
 
   // Measure horizontal travel distance and set runway height dynamically
   const updateRunwayDimensions = useCallback(() => {
@@ -56,6 +73,23 @@ export default function MobileCollectionsScrollytelling({
     const totalRunway = stageHeight + travelRunway;
 
     runway.style.height = `${totalRunway}px`;
+
+    const trackChildren = track.children;
+    const cardData: { offsetLeft: number; offsetWidth: number }[] = [];
+    for (let i = 0; i < trackChildren.length; i++) {
+      const card = trackChildren[i] as HTMLElement;
+      cardData.push({ offsetLeft: card.offsetLeft, offsetWidth: card.offsetWidth });
+    }
+
+    layoutMetricsRef.current = {
+      navbarHeight,
+      stageHeight,
+      totalScrollable: Math.max(1, totalRunway - stageHeight),
+      viewportWidth,
+      maxTravel,
+      runwayTop: window.scrollY + runway.getBoundingClientRect().top,
+      cards: cardData,
+    };
   }, []);
 
   useEffect(() => {
@@ -85,24 +119,30 @@ export default function MobileCollectionsScrollytelling({
 
       rafId = requestAnimationFrame(() => {
         rafId = null;
-        const runway = runwayRef.current;
         const track = trackRef.current;
-        if (!runway || !track || !track.parentElement) return;
+        if (!track) return;
 
-        const rect = runway.getBoundingClientRect();
-        const header = document.querySelector("header");
-        const navbarHeight = header?.offsetHeight ?? 76;
-        const stageHeight = stickyStageRef.current?.offsetHeight ?? (window.innerHeight - navbarHeight);
-        const totalScrollable = runway.offsetHeight - stageHeight;
+        const {
+          navbarHeight,
+          stageHeight,
+          totalScrollable,
+          viewportWidth,
+          maxTravel,
+          runwayTop,
+          cards,
+        } = layoutMetricsRef.current;
+
         if (totalScrollable <= 0) return;
 
         // Progress based on container's top position relative to sticky navbar boundary
-        const scrolled = navbarHeight - rect.top;
-        const progress = Math.min(Math.max(scrolled / totalScrollable, 0), 1);
+        const scrolled = window.scrollY - (runwayTop - navbarHeight);
 
-        // Compute horizontal travel
-        const viewportWidth = track.parentElement.clientWidth;
-        const maxTravel = Math.max(0, track.scrollWidth - viewportWidth);
+        // Early return if offscreen
+        if (scrolled < -stageHeight - 120 || scrolled > totalScrollable + stageHeight + 120) {
+          return;
+        }
+
+        const progress = Math.min(Math.max(scrolled / totalScrollable, 0), 1);
         const translateX = -progress * maxTravel;
 
         // Direct 60fps transform
@@ -114,15 +154,19 @@ export default function MobileCollectionsScrollytelling({
           progressBarRef.current.style.transform = `scaleX(${barScale.toFixed(3)})`;
         }
 
-        // Geometric card distance calculation for focal prominence and active card detection
-        const cards = track.children;
+        // Geometric card distance calculation with pre-cached offsets (zero layout thrashing)
+        const trackChildren = track.children;
         const viewportCenter = viewportWidth / 2;
         let closestIdx = 0;
         let minDistance = Infinity;
 
-        for (let i = 0; i < cards.length; i++) {
-          const card = cards[i] as HTMLElement;
-          const cardCenter = card.offsetLeft + card.offsetWidth / 2 + translateX;
+        for (let i = 0; i < trackChildren.length; i++) {
+          const card = trackChildren[i] as HTMLElement;
+          const cardMetrics = cards[i];
+          const cardOffsetLeft = cardMetrics ? cardMetrics.offsetLeft : card.offsetLeft;
+          const cardOffsetWidth = cardMetrics ? cardMetrics.offsetWidth : card.offsetWidth;
+
+          const cardCenter = cardOffsetLeft + cardOffsetWidth / 2 + translateX;
           const distFromCenter = Math.abs(viewportCenter - cardCenter);
 
           if (distFromCenter < minDistance) {
@@ -131,7 +175,7 @@ export default function MobileCollectionsScrollytelling({
           }
 
           // Subtle focal prominence enhancement on centered card
-          const normalizedDist = Math.min(distFromCenter / (card.offsetWidth * 0.95), 1);
+          const normalizedDist = Math.min(distFromCenter / (cardOffsetWidth * 0.95), 1);
           const scale = 1 - normalizedDist * 0.025; // 1.0 down to 0.975 (minimal & premium)
           const opacity = 1 - normalizedDist * 0.12; // 1.0 down to 0.88
           card.style.transform = `scale(${scale.toFixed(3)})`;
@@ -212,7 +256,7 @@ export default function MobileCollectionsScrollytelling({
               key={collection.id}
               className="flex-shrink-0 w-[84vw] max-w-[360px] aspect-[4/5] max-h-[58svh] snap-start rounded-[4px] overflow-hidden shadow-[0_10px_28px_rgba(30,26,23,0.10)]"
             >
-              <CollectionCard collection={collection} priority={index === 0} />
+              <CollectionCard collection={collection} priority={false} />
             </div>
           ))}
         </div>
@@ -253,7 +297,7 @@ export default function MobileCollectionsScrollytelling({
                 key={collection.id}
                 className="flex-shrink-0 w-[84vw] max-w-[360px] aspect-[4/5] max-h-[58svh] rounded-[4px] overflow-hidden shadow-[0_12px_32px_rgba(30,26,23,0.12)] will-change-transform"
               >
-                <CollectionCard collection={collection} priority={index === 0} />
+                <CollectionCard collection={collection} priority={false} />
               </div>
             ))}
           </div>

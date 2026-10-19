@@ -155,8 +155,8 @@ export default function MobileFashionIndex({
     <div className="w-full flex flex-col select-none">
       {/* ─── Hidden Preloaders ─── */}
       <div className="hidden" aria-hidden="true">
-        {prevImg && <Image src={prevImg} alt="" width={420} height={525} priority />}
-        {nextImg && <Image src={nextImg} alt="" width={420} height={525} priority />}
+        {prevImg && <Image src={prevImg} alt="" width={420} height={525} loading="lazy" />}
+        {nextImg && <Image src={nextImg} alt="" width={420} height={525} loading="lazy" />}
       </div>
 
       {/* ─── 1. Compact Editorial Section Heading ─── */}
@@ -209,8 +209,7 @@ export default function MobileFashionIndex({
             src={activeCategory.image}
             alt={activeCategory.alt}
             fill
-            priority
-            sizes="(max-width: 640px) 100vw, 420px"
+            sizes="(max-width: 640px) 92vw, 420px"
             className={`object-cover ${activeCategory.aspectFocus || "object-center"} will-change-transform`}
           />
         </div>

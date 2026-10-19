@@ -143,7 +143,7 @@ export default function MobileCinematicStories({
                   src={story.mobileImage}
                   alt={story.alt}
                   fill
-                  priority={idx === 0}
+                  priority={false}
                   sizes="(max-width: 768px) 85vw, 576px"
                   style={{ objectPosition: story.mobilePosition }}
                   className="object-cover"

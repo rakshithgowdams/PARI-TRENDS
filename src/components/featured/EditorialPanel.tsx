@@ -59,8 +59,8 @@ export default function EditorialPanel({
           src={edit.image}
           alt={edit.alt}
           fill
-          priority={index === 2} // Preload default active panel (Celebration Edit)
-          sizes="(max-width: 1024px) 100vw, 800px"
+          priority={false}
+          sizes="(max-width: 1024px) 94vw, 720px"
           className={`object-cover ${edit.aspectFocus || "object-center"} transform transition-all duration-700 ease-out will-change-transform ${
             isActive
               ? "grayscale-0 brightness-100 scale-[1.02]"

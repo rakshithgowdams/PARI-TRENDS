@@ -27,35 +27,37 @@ export function useScrolled(): boolean {
 
   useEffect(() => {
     let rafId: number | null = null;
+    let cachedTriggerY = 80;
+    let isPastCurrent = false;
 
-    const checkBoundary = () => {
+    const measureBoundary = () => {
+      const header = document.querySelector("header");
+      const navbarHeight = header?.offsetHeight ?? 80;
+
       const about = document.getElementById("about");
       if (about) {
-        // Measure the live fixed header height (defaulting to 80px)
-        const header = document.querySelector("header");
-        const navbarHeight = header?.offsetHeight ?? 80;
-
-        // Bounding client rect top is the exact pixel distance from the
-        // viewport top to the top of the About section.
-        const aboutRect = about.getBoundingClientRect();
-
-        // The navbar switches to solid ivory the exact moment the About section reaches it
-        setIsPastHero(aboutRect.top <= navbarHeight);
+        const aboutTop = window.scrollY + about.getBoundingClientRect().top;
+        cachedTriggerY = Math.max(0, aboutTop - navbarHeight);
       } else {
-        // Fallback if #about is not found: observe #home outer container bottom
         const hero = document.getElementById("home");
         if (hero) {
-          const heroRect = hero.getBoundingClientRect();
-          const header = document.querySelector("header");
-          const navbarHeight = header?.offsetHeight ?? 80;
-          setIsPastHero(heroRect.bottom <= navbarHeight);
+          const heroBottom = window.scrollY + hero.getBoundingClientRect().bottom;
+          cachedTriggerY = Math.max(0, heroBottom - navbarHeight);
         } else {
-          setIsPastHero(window.scrollY > 80);
+          cachedTriggerY = 80;
         }
       }
     };
 
-    const onScrollOrResize = () => {
+    const checkBoundary = () => {
+      const isPast = window.scrollY >= cachedTriggerY;
+      if (isPast !== isPastCurrent) {
+        isPastCurrent = isPast;
+        setIsPastHero(isPast);
+      }
+    };
+
+    const onScroll = () => {
       if (rafId !== null) return;
       rafId = window.requestAnimationFrame(() => {
         checkBoundary();
@@ -63,16 +65,28 @@ export function useScrolled(): boolean {
       });
     };
 
-    // Evaluate immediately on mount & after render
+    const onResize = () => {
+      measureBoundary();
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        checkBoundary();
+        rafId = null;
+      });
+    };
+
+    measureBoundary();
     checkBoundary();
 
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    const t1 = setTimeout(measureBoundary, 500);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
 
     return () => {
+      clearTimeout(t1);
       if (rafId !== null) window.cancelAnimationFrame(rafId);
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 

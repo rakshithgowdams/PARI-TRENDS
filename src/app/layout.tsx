@@ -115,10 +115,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (
-                  (window.location.hash && window.location.hash.length > 1 && window.location.hash !== '#home') ||
-                  /Lighthouse|PageSpeed|Chrome-Lighthouse/i.test(navigator.userAgent)
-                ) {
+                if (window.location.hash && window.location.hash.length > 1 && window.location.hash !== '#home') {
                   document.documentElement.classList.add('preloader-skipped');
                 }
               } catch (e) {}

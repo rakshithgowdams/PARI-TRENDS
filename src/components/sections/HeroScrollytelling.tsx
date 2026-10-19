@@ -70,7 +70,7 @@ export default function HeroScrollytelling() {
   // Scroll prompt indicator ref
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoHasFrames, setVideoHasFrames] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -83,8 +83,8 @@ export default function HeroScrollytelling() {
     mq.addEventListener("change", onChange);
 
     const video = videoRef.current;
-    if (video && video.readyState >= 1) {
-      setVideoLoaded(true);
+    if (video && video.readyState >= 2) {
+      setVideoHasFrames(true);
     }
 
     return () => mq.removeEventListener("change", onChange);
@@ -294,15 +294,51 @@ export default function HeroScrollytelling() {
       }
     };
 
-    const applyScroll = () => {
+    let cachedScrollable = 1;
+    let cachedInnerHeight = window.innerHeight;
+    let isPastHero = false;
+
+    const measureLayout = () => {
+      cachedInnerHeight = window.innerHeight;
       const rect = section.getBoundingClientRect();
-      const scrollable = rect.height - window.innerHeight;
+      cachedScrollable = Math.max(1, rect.height - cachedInnerHeight);
+    };
 
-      if (scrollable <= 0) return;
+    measureLayout();
 
-      const scrolledDistance = -rect.top;
-      const progress = clamp(scrolledDistance / scrollable, 0, 1);
+    // Progressive buffering strategy:
+    // Elevate preload to "auto" during idle or upon first user interaction
+    const initiateBuffer = () => {
+      if (video && video.preload !== "auto") {
+        video.preload = "auto";
+      }
+    };
 
+    let idleCallbackId: number | null = null;
+    let bufferTimer: ReturnType<typeof setTimeout> | null = null;
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      idleCallbackId = (window as unknown as { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback(
+        initiateBuffer,
+        { timeout: 2500 }
+      );
+    } else {
+      bufferTimer = setTimeout(initiateBuffer, 1200);
+    }
+
+    const applyScroll = () => {
+      const scrollY = window.scrollY;
+
+      // Early return if user has scrolled past the hero walkthrough
+      if (scrollY > cachedScrollable + cachedInnerHeight + 60) {
+        if (!isPastHero) {
+          isPastHero = true;
+          updateTypographyAndGradients(1);
+        }
+        return;
+      }
+      isPastHero = false;
+
+      const progress = clamp(scrollY / cachedScrollable, 0, 1);
       updateTypographyAndGradients(progress);
 
       // ─────────────────────────────────────────────────────────────
@@ -370,7 +406,17 @@ export default function HeroScrollytelling() {
       }
     };
 
-    const onScrollOrResize = () => {
+    const onScroll = () => {
+      initiateBuffer();
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        applyScroll();
+        rafId = null;
+      });
+    };
+
+    const onResize = () => {
+      measureLayout();
       if (rafId !== null) return;
       rafId = window.requestAnimationFrame(() => {
         applyScroll();
@@ -381,17 +427,23 @@ export default function HeroScrollytelling() {
     // Initial calculation on load
     applyScroll();
 
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("touchstart", initiateBuffer, { passive: true, once: true });
 
     return () => {
       if (rafId !== null) window.cancelAnimationFrame(rafId);
       if (seekSafetyTimer !== null) window.clearTimeout(seekSafetyTimer);
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      if (bufferTimer !== null) clearTimeout(bufferTimer);
+      if (idleCallbackId !== null && "cancelIdleCallback" in window) {
+        (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(idleCallbackId);
+      }
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("touchstart", initiateBuffer);
       video.removeEventListener("seeked", handleSeeked);
     };
-  }, [prefersReducedMotion, videoLoaded]);
+  }, [prefersReducedMotion]);
 
   // Reduced motion alternative layout
   if (prefersReducedMotion) {
@@ -463,7 +515,7 @@ export default function HeroScrollytelling() {
           playsInline
           preload="metadata"
           poster="/images/pari-trends-hero-poster.jpg"
-          onLoadedMetadata={() => setVideoLoaded(true)}
+          onLoadedData={() => setVideoHasFrames(true)}
           onError={() => setVideoError(true)}
           className={`absolute inset-0 h-full w-full object-cover object-center hero-media-cover transition-opacity duration-700 ${
             videoError ? "opacity-0" : "opacity-100"
@@ -480,17 +532,13 @@ export default function HeroScrollytelling() {
             src="/videos/pari-trends-hero-scroll-1080p.mp4"
             type="video/mp4"
           />
-          <source
-            src="/videos/pari-trends-hero-scroll-720p.mp4"
-            type="video/mp4"
-          />
         </video>
 
         {/* High-fidelity background poster — LCP Optimized with priority & high fetch priority */}
         <div
           ref={posterRef}
           className={`absolute inset-0 hero-media-cover transition-opacity duration-700 ${
-            videoLoaded && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
+            videoHasFrames && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
           aria-hidden="true"
         >

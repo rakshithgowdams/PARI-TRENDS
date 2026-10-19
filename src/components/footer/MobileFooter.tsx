@@ -110,6 +110,7 @@ export default function MobileFooter() {
               src={siteConfig.logo}
               alt={siteConfig.name}
               fill
+              sizes="48px"
               className="object-cover"
             />
           </div>
@@ -319,7 +320,7 @@ export default function MobileFooter() {
             fill
             sizes="(max-width: 768px) 100vw, 420px"
             className="object-cover object-bottom"
-            quality={92}
+            quality={85}
           />
 
           {/* Bottom gentle fade into copyright bar */}
