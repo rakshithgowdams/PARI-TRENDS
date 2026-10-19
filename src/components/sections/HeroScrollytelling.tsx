@@ -83,8 +83,15 @@ export default function HeroScrollytelling() {
     mq.addEventListener("change", onChange);
 
     const video = videoRef.current;
-    if (video && video.readyState >= 2) {
-      setVideoHasFrames(true);
+    if (video) {
+      const vid = video as HTMLVideoElement & { requestVideoFrameCallback?: (cb: () => void) => void };
+      if (typeof vid.requestVideoFrameCallback === "function") {
+        vid.requestVideoFrameCallback(() => {
+          setVideoHasFrames(true);
+        });
+      } else if (video.readyState >= 2) {
+        setVideoHasFrames(true);
+      }
     }
 
     return () => mq.removeEventListener("change", onChange);
@@ -296,12 +303,23 @@ export default function HeroScrollytelling() {
 
     let cachedScrollable = 1;
     let cachedInnerHeight = window.innerHeight;
+    let cachedInnerWidth = window.innerWidth;
     let isPastHero = false;
 
     const measureLayout = () => {
       cachedInnerHeight = window.innerHeight;
+      cachedInnerWidth = window.innerWidth;
       const rect = section.getBoundingClientRect();
       cachedScrollable = Math.max(1, rect.height - cachedInnerHeight);
+
+      if (cachedInnerWidth > 768) {
+        if (videoRef.current && videoRef.current.style.objectPosition) {
+          videoRef.current.style.objectPosition = "";
+        }
+        if (posterRef.current && posterRef.current.style.backgroundPosition) {
+          posterRef.current.style.backgroundPosition = "";
+        }
+      }
     };
 
     measureLayout();
@@ -348,7 +366,7 @@ export default function HeroScrollytelling() {
       // and holds at standard 50% center crop for 0.25–1.00.
       // Desktop / tablet (> 768px) is strictly preserved with center crop.
       // ─────────────────────────────────────────────────────────────
-      if (window.innerWidth <= 768) {
+      if (cachedInnerWidth <= 768) {
         let focalX = 85;
         if (progress > 0.10 && progress < 0.25) {
           const u = (progress - 0.10) / 0.15;
@@ -364,14 +382,6 @@ export default function HeroScrollytelling() {
         }
         if (posterRef.current) {
           posterRef.current.style.backgroundPosition = focalPos;
-        }
-      } else {
-        // Desktop / tablet (> 768px): clear inline overrides to preserve approved styles
-        if (videoRef.current && videoRef.current.style.objectPosition) {
-          videoRef.current.style.objectPosition = "";
-        }
-        if (posterRef.current && posterRef.current.style.backgroundPosition) {
-          posterRef.current.style.backgroundPosition = "";
         }
       }
 
@@ -508,17 +518,33 @@ export default function HeroScrollytelling() {
     >
       {/* Pinned 100svh viewport */}
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#1E1A17]">
-        {/* Walkthrough Video — preload metadata avoids 13MB initial network block */}
+        {/* Permanent High-Fidelity First-Frame Poster — Continuous Stable LCP Resource */}
+        <div
+          ref={posterRef}
+          className="absolute inset-0 hero-media-cover z-0 pointer-events-none select-none"
+        >
+          <Image
+            src="/images/pari-trends-hero-poster.jpg"
+            alt="Pari Trends Boutique Showroom in Alur"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={85}
+            className="object-cover object-center hero-media-cover"
+          />
+        </div>
+
+        {/* Walkthrough Video Layer — Sits seamlessly on top of poster (z-[1]) */}
         <video
           ref={videoRef}
           muted
           playsInline
           preload="metadata"
-          poster="/images/pari-trends-hero-poster.jpg"
           onLoadedData={() => setVideoHasFrames(true)}
           onError={() => setVideoError(true)}
-          className={`absolute inset-0 h-full w-full object-cover object-center hero-media-cover transition-opacity duration-700 ${
-            videoError ? "opacity-0" : "opacity-100"
+          className={`absolute inset-0 h-full w-full object-cover object-center hero-media-cover z-[1] transition-opacity duration-700 ${
+            videoHasFrames && !videoError ? "opacity-100" : "opacity-0"
           }`}
           aria-hidden="true"
           tabIndex={-1}
@@ -533,26 +559,6 @@ export default function HeroScrollytelling() {
             type="video/mp4"
           />
         </video>
-
-        {/* High-fidelity background poster — LCP Optimized with priority & high fetch priority */}
-        <div
-          ref={posterRef}
-          className={`absolute inset-0 hero-media-cover transition-opacity duration-700 ${
-            videoHasFrames && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`}
-          aria-hidden="true"
-        >
-          <Image
-            src="/images/pari-trends-hero-poster.jpg"
-            alt="Pari Trends Boutique Showroom in Alur"
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-            quality={85}
-            className="object-cover object-center hero-media-cover"
-          />
-        </div>
 
         {/* ─── Static Vignettes for Fixed Navbar & Upcoming Section Transitions ─── */}
         <div
