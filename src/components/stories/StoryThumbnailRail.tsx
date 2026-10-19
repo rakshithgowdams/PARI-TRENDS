@@ -70,25 +70,25 @@ export default function StoryThumbnailRail({
                 : "w-[68px] sm:w-[78px] md:w-[84px] h-[96px] sm:h-[108px] md:h-[116px] translate-y-0 opacity-75 hover:opacity-100 hover:-translate-y-1.5 z-10"
             }`}
           >
-            {/* Thumbnail Image — derived from master 16:9 story photograph */}
+            {/* Thumbnail Image — derived from master story photograph with intentional portrait crop */}
             <div className="absolute inset-0 w-full h-full">
               <Image
                 src={story.image}
                 alt={story.alt}
                 fill
                 sizes="(max-width: 640px) 92px, 120px"
-                className={`object-cover object-[center_25%] transition-all duration-700 ease-out ${
+                className={`object-cover object-[center_18%] transition-all duration-700 ease-out ${
                   isActive
                     ? "grayscale-0 brightness-105 scale-105"
-                    : "grayscale-[80%] brightness-[0.70] group-hover:grayscale-0 group-hover:brightness-90 scale-100"
+                    : "grayscale-[30%] brightness-[0.88] group-hover:grayscale-0 group-hover:brightness-100 scale-100"
                 }`}
               />
             </div>
 
             {/* Subtle Gradient Scrim for contrast */}
             <div
-              className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-500 ${
-                isActive ? "opacity-75" : "opacity-90"
+              className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent transition-opacity duration-500 ${
+                isActive ? "opacity-65" : "opacity-75"
               }`}
               aria-hidden="true"
             />

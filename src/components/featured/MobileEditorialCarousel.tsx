@@ -26,7 +26,10 @@ export default function MobileEditorialCarousel() {
     const container = scrollContainerRef.current;
     if (!container || !container.children[0]) return;
     const firstCard = container.children[0] as HTMLElement;
-    const cardStep = firstCard.offsetWidth + 16; // card width + gap
+    const secondCard = container.children[1] as HTMLElement | undefined;
+    const cardStep = secondCard
+      ? Math.max(1, secondCard.offsetLeft - firstCard.offsetLeft)
+      : firstCard.offsetWidth + 16;
     const index = Math.round(container.scrollLeft / cardStep);
     setCurrentIndex(Math.max(0, Math.min(FEATURED_EDITS.length - 1, index)));
   };

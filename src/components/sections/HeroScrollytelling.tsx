@@ -478,7 +478,7 @@ export default function HeroScrollytelling() {
         {/* Gradient 03: Localized left contrast for Scene 03 (preserves right mannequin visibility) */}
         <div
           ref={grad3Ref}
-          className="absolute inset-0 bg-gradient-to-tr from-black/85 via-black/40 to-transparent pointer-events-none z-10 transition-opacity duration-150 will-change-opacity"
+          className="absolute inset-y-0 left-0 w-full sm:w-[60%] lg:w-[48%] bg-gradient-to-r from-black/85 via-black/40 to-transparent pointer-events-none z-10 transition-opacity duration-150 will-change-opacity"
           style={{ opacity: 0 }}
           aria-hidden="true"
         />

@@ -25,6 +25,7 @@ export default function AboutPariTrends() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [parallaxOffset, setParallaxOffset] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -61,11 +62,30 @@ export default function AboutPariTrends() {
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
+  // Subtle restrained parallax (15-20px) for the editorial portrait
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (rect.top < vh && rect.bottom > 0) {
+        const progress = (vh - rect.top) / (vh + rect.height);
+        setParallaxOffset((progress - 0.5) * 22); // ~ -11px to +11px
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prefersReducedMotion]);
+
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-24 sm:py-32 lg:py-44 overflow-hidden"
+      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-20 sm:py-28 lg:py-36 overflow-hidden"
       aria-label="About Pari Trends — The Boutique"
     >
       {/* Ambient warm gradient glow */}
@@ -75,17 +95,17 @@ export default function AboutPariTrends() {
       />
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 sm:gap-16 lg:gap-12 xl:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-14 lg:gap-12 xl:gap-16 items-center">
 
-          {/* ─── 2. Left Column: Editorial Storytelling (~55% width) ─── */}
+          {/* ─── Left Column: Editorial Storytelling (~50% width) ─── */}
           <div className="relative lg:col-span-6 xl:col-span-6 flex flex-col justify-center">
 
-            {/* ─── Subtle Editorial Background Typography: "PARI" Watermark (Left Column Exclusive) ─── */}
+            {/* Subtle Editorial Background Typography: "PARI" Watermark strictly in Left Column */}
             <div
-              className="absolute left-0 bottom-4 sm:bottom-8 lg:bottom-12 pointer-events-none select-none overflow-hidden z-0 opacity-[0.035] sm:opacity-[0.045] max-w-full"
+              className="absolute left-0 bottom-0 pointer-events-none select-none overflow-hidden z-0 opacity-[0.03] max-w-[90%]"
               aria-hidden="true"
             >
-              <span className="font-serif font-bold text-[clamp(6rem,15vw,13.5rem)] leading-none text-[#1E1A17] tracking-[0.06em] select-none block -translate-x-2 sm:-translate-x-4">
+              <span className="font-serif font-bold text-[clamp(5rem,11vw,9.5rem)] leading-none text-[#1E1A17] tracking-[0.06em] select-none block -translate-x-2">
                 PARI
               </span>
             </div>
@@ -93,10 +113,10 @@ export default function AboutPariTrends() {
             <div className="relative z-10 flex flex-col justify-center">
               {/* Small Eyebrow Label */}
               <div
-                className={`flex items-center gap-3 mb-6 sm:mb-8 transition-all duration-700 ease-out ${
+                className={`flex items-center gap-3 mb-5 sm:mb-6 transition-all duration-700 ease-out ${
                   isVisible || prefersReducedMotion
                     ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
+                    : "opacity-0 translate-y-3"
                 }`}
                 style={{ transitionDelay: prefersReducedMotion ? "0ms" : "100ms" }}
               >
@@ -106,52 +126,56 @@ export default function AboutPariTrends() {
                 </span>
               </div>
 
-            {/* Expressive Editorial Headline with Hand-Set Typographic Overlap */}
-            <div className="mb-6 sm:mb-8">
-              {/* Primary Line */}
-              <h2
-                className={`font-serif text-[clamp(2.75rem,5.4vw,5.2rem)] font-medium leading-[0.98] tracking-tight text-[#1E1A17] transition-all duration-700 ease-out ${
-                  isVisible || prefersReducedMotion
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "220ms" }}
-              >
-                Everyday Style.
-              </h2>
+            {/* Expressive Editorial Headline — Balanced 2-line desktop composition */}
+            <div className="mb-5 sm:mb-6 overflow-hidden">
+              {/* Line 1 */}
+              <div className="overflow-hidden">
+                <h2
+                  className={`font-serif text-[clamp(2.2rem,4vw,3.6rem)] font-medium leading-[1.08] tracking-tight text-[#1E1A17] transition-all duration-700 ease-out ${
+                    isVisible || prefersReducedMotion
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-6"
+                  }`}
+                  style={{ transitionDelay: prefersReducedMotion ? "0ms" : "200ms" }}
+                >
+                  Everyday Style.
+                </h2>
+              </div>
 
-              {/* Expressive Secondary Line — Playfair Display Italic in Pari Pink with overlapping negative margin */}
-              <span
-                className={`block font-serif italic font-normal text-[clamp(3.1rem,6.4vw,5.9rem)] text-[#D81B77] -mt-1.5 sm:-mt-3 lg:-mt-4 leading-[1.05] tracking-tight transition-all duration-750 ease-out ${
-                  isVisible || prefersReducedMotion
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "380ms" }}
-              >
-                Beautifully Yours.
-              </span>
+              {/* Line 2 — Playfair Display Italic in Pari Pink */}
+              <div className="overflow-hidden">
+                <span
+                  className={`block font-serif italic font-normal text-[clamp(2.5rem,4.4vw,4rem)] text-[#D81B77] -mt-1 sm:-mt-2 leading-[1.1] tracking-tight transition-all duration-700 ease-out ${
+                    isVisible || prefersReducedMotion
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-6"
+                  }`}
+                  style={{ transitionDelay: prefersReducedMotion ? "0ms" : "320ms" }}
+                >
+                  Beautifully Yours.
+                </span>
+              </div>
             </div>
 
             {/* Elegant Short Gold Rule */}
             <div
-              className={`w-12 h-[1.5px] bg-[#C89A2D] mb-6 sm:mb-7 transition-all duration-700 ease-out ${
+              className={`w-12 h-[1.5px] bg-[#C89A2D] mb-5 sm:mb-6 transition-all duration-700 ease-out ${
                 isVisible || prefersReducedMotion
                   ? "opacity-100 scale-x-100"
                   : "opacity-0 scale-x-0 origin-left"
               }`}
-              style={{ transitionDelay: prefersReducedMotion ? "0ms" : "480ms" }}
+              style={{ transitionDelay: prefersReducedMotion ? "0ms" : "420ms" }}
               aria-hidden="true"
             />
 
-            {/* Supporting Paragraph — ~45-55 characters per line */}
+            {/* Supporting Paragraph */}
             <p
-              className={`font-sans text-[16.5px] sm:text-[18px] lg:text-[19px] font-normal text-[#6B5B52] leading-[1.8] max-w-[48ch] mb-8 sm:mb-10 transition-all duration-700 ease-out ${
+              className={`font-sans text-base sm:text-[17px] font-normal text-[#6B5B52] leading-relaxed max-w-[46ch] mb-7 sm:mb-8 transition-all duration-700 ease-out ${
                 isVisible || prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
-              style={{ transitionDelay: prefersReducedMotion ? "0ms" : "540ms" }}
+              style={{ transitionDelay: prefersReducedMotion ? "0ms" : "500ms" }}
             >
               From comfortable everyday looks to occasion-ready outfits, discover women&apos;s
               fashion curated for every kind of moment.
@@ -213,8 +237,13 @@ export default function AboutPariTrends() {
               <span className="w-8 h-[1px] bg-[#C89A2D]/40" />
             </div>
 
-            {/* Composition Wrapper */}
-            <div className="relative w-full max-w-[450px] lg:max-w-[480px]">
+            {/* Composition Wrapper with Subtle Parallax */}
+            <div
+              className="relative w-full max-w-[450px] lg:max-w-[480px] transition-transform duration-700 ease-out will-change-transform"
+              style={{
+                transform: prefersReducedMotion ? "none" : `translateY(${parallaxOffset}px)`,
+              }}
+            >
 
               {/* Architectural Offset Backing Shape (#EFE4D6) */}
               <div
@@ -229,7 +258,7 @@ export default function AboutPariTrends() {
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-[1.03]"
                 }`}
-                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "280ms" }}
+                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "360ms" }}
               >
                 <Image
                   src="/images/pari-trends-about-editorial.jpg"
@@ -257,7 +286,10 @@ export default function AboutPariTrends() {
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-6"
                   }`}
-                style={{ transitionDelay: prefersReducedMotion ? "0ms" : "580ms" }}
+                style={{
+                  transitionDelay: prefersReducedMotion ? "0ms" : "650ms",
+                  transform: prefersReducedMotion ? undefined : `translateY(${-parallaxOffset * 0.4}px)`,
+                }}
               >
                 <div className="relative w-full h-full rounded-lg overflow-hidden bg-[#EFE4D6]">
                   <Image

@@ -60,7 +60,7 @@ export default function FeaturedEditorial() {
     <section
       id="featured"
       ref={sectionRef}
-      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-24 sm:py-32 lg:py-40 overflow-hidden border-t border-[#EFE4D6]"
+      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-20 sm:py-28 lg:py-32 overflow-hidden border-t border-[#EFE4D6]"
       aria-label="Worth Your Attention — The Pari Edit"
     >
       {/* ─── Ambient Studio Glow ─── */}
@@ -76,7 +76,7 @@ export default function FeaturedEditorial() {
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
 
         {/* ─── Section Header ─── */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 pb-12 sm:pb-16 border-b border-[#EFE4D6]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 pb-8 sm:pb-10 border-b border-[#EFE4D6]">
           <div className="max-w-2xl">
             {/* Eyebrow with gold accent rule */}
             <div
@@ -129,7 +129,7 @@ export default function FeaturedEditorial() {
 
         {/* ─── Accordion & Carousel Showcase ─── */}
         <div
-          className={`mt-10 sm:mt-14 transition-all duration-1000 ease-out ${
+          className={`mt-8 sm:mt-10 transition-all duration-1000 ease-out ${
             isVisible || prefersReducedMotion
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"

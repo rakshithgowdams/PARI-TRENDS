@@ -52,6 +52,10 @@ body {
   scroll-margin-top: 96px;
 }
 
+#home {
+  scroll-margin-top: 0;
+}
+
 /* ─── Nav link hover underline ─── */
 
 .nav-link {

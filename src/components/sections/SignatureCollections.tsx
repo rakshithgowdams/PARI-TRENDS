@@ -22,7 +22,11 @@ import { COLLECTIONS_DATA } from "@/data/collections";
  */
 export default function SignatureCollections() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const [headerVisible, setHeaderVisible] = useState(false);
+  const [row1Visible, setRow1Visible] = useState(false);
+  const [row2Visible, setRow2Visible] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -36,27 +40,40 @@ export default function SignatureCollections() {
 
   useEffect(() => {
     if (prefersReducedMotion) {
-      setIsVisible(true);
+      setHeaderVisible(true);
+      setRow1Visible(true);
+      setRow2Visible(true);
       return;
     }
 
-    const section = sectionRef.current;
-    if (!section) return;
+    const headerEl = sectionRef.current;
+    const row1El = row1Ref.current;
+    const row2El = row2Ref.current;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect(); // Trigger once on entry
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target === headerEl) {
+              setHeaderVisible(true);
+            } else if (entry.target === row1El) {
+              setRow1Visible(true);
+            } else if (entry.target === row2El) {
+              setRow2Visible(true);
+            }
+          }
+        });
       },
       {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.15,
+        rootMargin: "0px 0px -40px 0px",
       }
     );
 
-    observer.observe(section);
+    if (headerEl) observer.observe(headerEl);
+    if (row1El) observer.observe(row1El);
+    if (row2El) observer.observe(row2El);
+
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
@@ -85,7 +102,7 @@ export default function SignatureCollections() {
             {/* Eyebrow with delicate gold rule */}
             <div
               className={`flex items-center gap-3 mb-4 transition-all duration-700 ease-out ${
-                isVisible || prefersReducedMotion
+                headerVisible || prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-3"
               }`}
@@ -100,7 +117,7 @@ export default function SignatureCollections() {
             {/* Main Headline */}
             <h2
               className={`font-serif text-3xl sm:text-4xl lg:text-5xl tracking-tight text-[#1E1A17] leading-[1.15] transition-all duration-700 ease-out ${
-                isVisible || prefersReducedMotion
+                headerVisible || prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
@@ -116,7 +133,7 @@ export default function SignatureCollections() {
           {/* Supporting Copy & Editorial Caption */}
           <div
             className={`max-w-md transition-all duration-700 ease-out ${
-              isVisible || prefersReducedMotion
+              headerVisible || prefersReducedMotion
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
             }`}
@@ -131,29 +148,56 @@ export default function SignatureCollections() {
           </div>
         </div>
 
-        {/* ─── Editorial Grid: 12-Column Responsive Layout ─── */}
-        <div className="mt-12 sm:mt-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6">
-            {COLLECTIONS_DATA.map((collection, index) => {
-              const delay = prefersReducedMotion ? 0 : 350 + index * 90;
-              const isStatement = collection.row === 1;
+        {/* ─── Editorial Grid: 12-Column Responsive Layout with Row-by-Row Gallery Reveal ─── */}
+        <div className="mt-12 sm:mt-16 space-y-6">
+          {/* Row 1: Statement Sets (3 Cards, 4 cols each) */}
+          <div
+            ref={row1Ref}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6"
+          >
+            {COLLECTIONS_DATA.slice(0, 3).map((collection, index) => {
+              const delay = prefersReducedMotion ? 0 : index * 120;
+              const cardVisible = row1Visible || prefersReducedMotion;
               return (
                 <div
                   key={collection.id}
-                  className={`col-span-1 sm:col-span-1 ${
-                    isStatement ? "lg:col-span-4" : "lg:col-span-3"
-                  } ${
-                    index === 6
-                      ? "sm:col-span-2 sm:max-w-md sm:mx-auto lg:max-w-none lg:col-span-3"
-                      : ""
-                  } transition-all duration-700 ease-out ${
-                    isVisible || prefersReducedMotion
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-8"
+                  className={`col-span-1 sm:col-span-1 lg:col-span-4 transition-all duration-700 ease-out will-change-transform ${
+                    cardVisible
+                      ? "opacity-100 translate-y-0 scale-100"
+                      : "opacity-0 translate-y-6 scale-[1.03]"
                   }`}
                   style={{ transitionDelay: `${delay}ms` }}
                 >
                   <CollectionCard collection={collection} priority={index < 2} />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Row 2: Versatile Wardrobe (4 Cards, 3 cols each) */}
+          <div
+            ref={row2Ref}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6"
+          >
+            {COLLECTIONS_DATA.slice(3, 7).map((collection, index) => {
+              const delay = prefersReducedMotion ? 0 : index * 100;
+              const cardVisible = row2Visible || prefersReducedMotion;
+              const isLastCard = index === 3; // 7th category (Dupatta Sets)
+              return (
+                <div
+                  key={collection.id}
+                  className={`col-span-1 sm:col-span-1 lg:col-span-3 ${
+                    isLastCard
+                      ? "sm:col-span-2 sm:max-w-md sm:mx-auto lg:max-w-none lg:col-span-3"
+                      : ""
+                  } transition-all duration-700 ease-out will-change-transform ${
+                    cardVisible
+                      ? "opacity-100 translate-y-0 scale-100"
+                      : "opacity-0 translate-y-6 scale-[1.03]"
+                  }`}
+                  style={{ transitionDelay: `${delay}ms` }}
+                >
+                  <CollectionCard collection={collection} priority={false} />
                 </div>
               );
             })}

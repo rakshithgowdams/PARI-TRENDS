@@ -1,7 +1,10 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 /**
- * FooterFashionArtwork — Phase 08: Cinematic Editorial Footer Artwork
+ * FooterFashionArtwork — Cinematic Editorial Footer Artwork
  *
  * Characteristics:
  *  • Ultra-wide luxury Indian fashion campaign photography featuring four
@@ -9,13 +12,40 @@ import Image from "next/image";
  *  • Anchored to the bottom with object-position: bottom center.
  *  • Strict seamless blending into #F8F2EA background via custom dual-layer
  *    alpha masking and top-edge ambient gradient.
+ *  • Gentle single entrance reveal on viewport entry (translates upward 8px smoothly).
  *  • Preserves a completely clean text-safe zone above the figures.
  *  • Pointer-events: none ensures zero interference with footer navigation.
  */
 export default function FooterFashionArtwork() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
-      className="absolute inset-x-0 bottom-0 pointer-events-none select-none overflow-hidden h-[340px] sm:h-[440px] md:h-[520px] lg:h-[600px] xl:h-[640px] z-0"
+      ref={containerRef}
+      className={`absolute inset-x-0 bottom-0 pointer-events-none select-none overflow-hidden h-[340px] sm:h-[440px] md:h-[520px] lg:h-[600px] xl:h-[640px] z-0 transition-all duration-1000 ease-out will-change-transform ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      }`}
       aria-hidden="true"
     >
       {/* ─── 1. Top Edge Seamless Gradient Fade into #F8F2EA ─── */}

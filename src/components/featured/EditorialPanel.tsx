@@ -64,14 +64,14 @@ export default function EditorialPanel({
           className={`object-cover ${edit.aspectFocus || "object-center"} transform transition-all duration-700 ease-out will-change-transform ${
             isActive
               ? "grayscale-0 brightness-100 scale-[1.02]"
-              : "grayscale brightness-[0.62] group-hover:brightness-[0.75] scale-100"
+              : "grayscale-[70%] brightness-[0.78] group-hover:brightness-[0.90] group-hover:grayscale-[25%] scale-100"
           }`}
         />
       </div>
 
       {/* ─── 2. Inactive State Vignette & Top Tint ─── */}
       <div
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-700 pointer-events-none ${
+        className={`absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-black/30 transition-opacity duration-700 pointer-events-none ${
           isActive ? "opacity-0" : "opacity-100"
         }`}
         aria-hidden="true"
@@ -87,8 +87,10 @@ export default function EditorialPanel({
 
       {/* ─── 4. INACTIVE PANEL CONTENT (Vertical Magazine Spine Style) ─── */}
       <div
-        className={`absolute inset-0 z-10 flex flex-col items-center justify-between py-6 px-2 pointer-events-none transition-all duration-500 ${
-          isActive ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100"
+        className={`absolute inset-0 z-10 flex flex-col items-center justify-between py-6 px-2 pointer-events-none transition-all ${
+          isActive
+            ? "opacity-0 scale-95 duration-150 delay-0 pointer-events-none"
+            : "opacity-100 scale-100 duration-400 delay-200"
         }`}
         aria-hidden={isActive}
       >
@@ -110,10 +112,10 @@ export default function EditorialPanel({
 
       {/* ─── 5. ACTIVE PANEL CONTENT (Expanded Editorial View) ─── */}
       <div
-        className={`absolute inset-0 z-20 flex flex-col justify-between p-6 sm:p-8 lg:p-10 transition-all duration-700 ease-out ${
+        className={`absolute inset-0 z-20 flex flex-col justify-between p-6 sm:p-8 lg:p-10 transition-all ${
           isActive
-            ? "opacity-100 translate-y-0 pointer-events-auto delay-150"
-            : "opacity-0 translate-y-4 pointer-events-none"
+            ? "opacity-100 translate-y-0 duration-500 ease-out delay-200 pointer-events-auto"
+            : "opacity-0 translate-y-3 duration-150 ease-in delay-0 pointer-events-none"
         }`}
         aria-hidden={!isActive}
       >
@@ -132,7 +134,7 @@ export default function EditorialPanel({
         </div>
 
         {/* Bottom Editorial Information & WhatsApp CTA */}
-        <div className="max-w-xl">
+        <div className="w-full max-w-xl min-w-[280px] sm:min-w-[340px] xl:min-w-[400px]">
           {/* Subtitle / Category (Visible on mobile/tablet inside card) */}
           <p className="font-sans text-[11px] sm:text-xs uppercase tracking-[0.22em] text-[#C89A2D] mb-1.5 sm:hidden font-semibold">
             {edit.category}
@@ -155,7 +157,7 @@ export default function EditorialPanel({
             rel={isExternalWhatsApp ? "noopener noreferrer" : undefined}
             tabIndex={isActive ? 0 : -1}
             onClick={(e) => e.stopPropagation()} // Prevent card toggle when clicking button
-            className="group/btn inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#D81B77] hover:bg-[#AD1457] text-white text-[13px] sm:text-[14px] font-sans font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-[#D81B77]/30 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D81B77]"
+            className="group/btn inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#D81B77] hover:bg-[#b51461] border border-white/20 text-white text-[13px] sm:text-[14px] font-sans font-semibold tracking-wide transition-all duration-300 shadow-xl shadow-black/30 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D81B77]"
           >
             <span>Enquire About This Style</span>
             <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />

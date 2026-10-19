@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, MapPin, Clock, Phone, Navigation } from "lucide-react";
+import { ArrowUpRight, MapPin, Clock, Phone, Navigation, ChevronLeft, ChevronRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -24,21 +24,61 @@ function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
+interface ShowroomScene {
+  id: string;
+  number: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  alt: string;
+}
+
+const SHOWROOM_SCENES: ShowroomScene[] = [
+  {
+    id: "welcome",
+    number: "01",
+    title: "The Welcome",
+    subtitle: "Reception & Logo Wall",
+    image: "/images/visit/showroom-01-welcome.jpg",
+    alt: "Pari Trends boutique reception counter with illuminated logo wall and warm architectural lighting",
+  },
+  {
+    id: "collections",
+    number: "02",
+    title: "The Collections",
+    subtitle: "Curated Shelving",
+    image: "/images/visit/showroom-02-collections.jpg",
+    alt: "Pari Trends boutique interior with dark wooden display shelves and folded women's garments",
+  },
+  {
+    id: "looks",
+    number: "03",
+    title: "The Looks",
+    subtitle: "Mannequin Display",
+    image: "/images/visit/showroom-03-looks.jpg",
+    alt: "Pari Trends boutique showroom mannequin display showcasing festive occasion ensembles",
+  },
+];
+
 /**
- * VisitOurStore — Pari Trends: Visit Our Store Section
+ * VisitOurStore — Complete Redesign: "Step Inside Pari"
  *
- * Characteristics:
- *  • Boutique Invitation experience connecting digital stories to physical showroom
- *  • Left (~42%): Editorial typography, address, timings, and verified action links
- *  • Right (~58%): Panoramic photograph of the real Pari Trends showroom
- *  • Oversized low-opacity "ALUR" background lettering
- *  • Seamless warm ivory background transition into the editorial footer
- *  • Respects prefers-reduced-motion with gentle scroll entrance
+ * Section ID: `visit`
+ *
+ * Key Design Features:
+ *  • 12-Column Editorial composition (Left: 5 cols, Right: 7 cols)
+ *  • Left: "A Little Closer to Pari." headline, store location, verified timings, primary & secondary CTAs
+ *  • Right: Interactive 3-scene authentic showroom gallery with smooth 600ms crossfades
+ *  • Compact editorial thumbnail selectors with active indicator pills
+ *  • Subtle scroll-linked parallax (capped at 20px)
+ *  • Removed repetitive "ALUR" watermark in favor of an elegant gold location rule
  */
 export default function VisitOurStore() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [parallaxY, setParallaxY] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -75,6 +115,36 @@ export default function VisitOurStore() {
     return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
+  // Subtle parallax inside the showroom gallery image (approx 15-20px range)
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      if (rect.top < viewportHeight && rect.bottom > 0) {
+        const progress = (viewportHeight - rect.top) / (viewportHeight + rect.height);
+        const offset = (progress - 0.5) * 24; // Range ~ -12px to +12px
+        setParallaxY(offset);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prefersReducedMotion]);
+
+  const activeScene = SHOWROOM_SCENES[activeSceneIndex];
+
+  const handlePrevScene = () => {
+    setActiveSceneIndex((prev) => (prev === 0 ? SHOWROOM_SCENES.length - 1 : prev - 1));
+  };
+
+  const handleNextScene = () => {
+    setActiveSceneIndex((prev) => (prev === SHOWROOM_SCENES.length - 1 ? 0 : prev + 1));
+  };
+
   const callHref = siteConfig.phone ? `tel:${siteConfig.phone}` : siteConfig.whatsappUrl;
   const isExternalCall = !siteConfig.phone && Boolean(siteConfig.whatsapp);
 
@@ -96,20 +166,11 @@ export default function VisitOurStore() {
       />
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
           
-          {/* ─── Left Column: Editorial Invitation Content (~42%) ─── */}
-          <div className="relative lg:col-span-5 flex flex-col justify-center">
+          {/* ─── Left Column: Boutique Invitation & Details (5 cols) ─── */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
             
-            {/* Oversized background "ALUR" watermark */}
-            <div
-              className="absolute -top-12 -left-6 sm:-left-10 font-serif text-[clamp(6rem,14vw,13rem)] font-bold text-[#1E1A17]/[0.035] leading-none pointer-events-none select-none -z-10"
-              aria-hidden="true"
-            >
-              ALUR
-            </div>
-
             {/* Eyebrow */}
             <div
               className={`flex items-center gap-3 mb-4 sm:mb-5 transition-all duration-700 ease-out ${
@@ -121,22 +182,22 @@ export default function VisitOurStore() {
             >
               <div className="h-[1px] w-8 sm:w-12 bg-[#C89A2D]" aria-hidden="true" />
               <span className="font-sans text-[11px] sm:text-xs tracking-[0.28em] font-semibold text-[#C89A2D] uppercase">
-                06 / FIND US IN ALUR
+                06 / VISIT OUR BOUTIQUE
               </span>
             </div>
 
             {/* Main Headline */}
             <h2
-              className={`font-serif text-3xl sm:text-4xl lg:text-5xl tracking-tight text-[#1E1A17] leading-[1.12] mb-5 sm:mb-6 transition-all duration-700 ease-out ${
+              className={`font-serif text-3xl sm:text-4xl lg:text-5xl tracking-tight text-[#1E1A17] leading-[1.14] mb-5 sm:mb-6 transition-all duration-700 ease-out ${
                 isVisible || prefersReducedMotion
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
               style={{ transitionDelay: prefersReducedMotion ? "0ms" : "200ms" }}
             >
-              Your Next Favourite Look{" "}
+              A Little Closer to{" "}
               <span className="italic font-serif text-[#D81B77] font-normal block sm:inline">
-                Awaits.
+                Pari.
               </span>
             </h2>
 
@@ -149,7 +210,7 @@ export default function VisitOurStore() {
               }`}
               style={{ transitionDelay: prefersReducedMotion ? "0ms" : "300ms" }}
             >
-              Step into Pari Trends and explore beautiful styles curated for everyday moments and special occasions.
+              Your next favourite look is waiting in Alur. Step inside and explore Pari Trends in person.
             </p>
 
             {/* Location & Timings Block */}
@@ -161,11 +222,11 @@ export default function VisitOurStore() {
               }`}
               style={{ transitionDelay: prefersReducedMotion ? "0ms" : "400ms" }}
             >
-              {/* Boutique Tag */}
+              {/* Boutique Location Tag */}
               <div className="inline-flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C89A2D]" />
                 <span className="font-sans text-[10.5px] tracking-[0.24em] uppercase font-semibold text-[#1E1A17]/70">
-                  PARI TRENDS / ALUR SHOWROOM
+                  PARI TRENDS • ALUR BOUTIQUE
                 </span>
               </div>
 
@@ -186,7 +247,7 @@ export default function VisitOurStore() {
               </div>
             </div>
 
-            {/* Action Buttons Group */}
+            {/* Action Buttons Group (Primary: Get Directions) */}
             <div
               className={`flex flex-wrap items-center gap-3 sm:gap-4 transition-all duration-700 ease-out ${
                 isVisible || prefersReducedMotion
@@ -206,7 +267,7 @@ export default function VisitOurStore() {
                 <Navigation className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
 
-              {/* Secondary: Call Store / WhatsApp */}
+              {/* Secondary: Contact / WhatsApp */}
               <a
                 href={callHref}
                 target={isExternalCall ? "_blank" : undefined}
@@ -214,16 +275,16 @@ export default function VisitOurStore() {
                 className="group inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3.5 rounded-full border border-[#1E1A17]/25 hover:border-[#1E1A17] hover:bg-[#1E1A17]/5 text-[#1E1A17] text-[13.5px] sm:text-[14px] font-sans font-medium transition-all duration-300 active:scale-95"
               >
                 <Phone className="w-4 h-4 text-[#C89A2D]" />
-                <span>{siteConfig.phone ? "Call the Store" : "Contact Store"}</span>
+                <span>{siteConfig.phone ? "Call the Store" : "Enquire on WhatsApp"}</span>
                 <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
 
-              {/* Optional: Connect on Instagram */}
+              {/* Secondary: Instagram */}
               <a
                 href={siteConfig.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Connect on Instagram"
+                aria-label="Follow Pari Trends on Instagram"
                 className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-[#1E1A17]/20 hover:border-[#D81B77] hover:text-[#D81B77] text-[#1E1A17] transition-all duration-300"
               >
                 <InstagramIcon className="w-4 h-4" />
@@ -232,7 +293,7 @@ export default function VisitOurStore() {
 
           </div>
 
-          {/* ─── Right Column: Panoramic Showroom Photograph (~58%) ─── */}
+          {/* ─── Right Column: Interactive Showroom Gallery (7 cols) ─── */}
           <div
             className={`lg:col-span-7 transition-all duration-1000 ease-out ${
               isVisible || prefersReducedMotion
@@ -241,43 +302,141 @@ export default function VisitOurStore() {
             }`}
             style={{ transitionDelay: prefersReducedMotion ? "0ms" : "350ms" }}
           >
-            <div className="relative group rounded-[6px] overflow-hidden border border-[#EFE4D6] shadow-xl shadow-black/5 bg-[#1E1A17]">
+            <div className="relative flex flex-col gap-4">
               
-              {/* Showroom Image (16:9 Aspect Ratio) */}
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9]">
-                <Image
-                  src="/images/visit/pari-trends-showroom.webp"
-                  alt="Pari Trends Boutique Showroom Interior in Alur — White reception counters, wooden shelves, and curated fashion displays"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 850px"
-                  className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+              {/* Main Architectural Stage */}
+              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-[4px] overflow-hidden border border-[#EFE4D6] bg-[#1E1A17] shadow-lg shadow-black/5">
+                
+                {/* Crossfading Scenes */}
+                {SHOWROOM_SCENES.map((scene, index) => {
+                  const isActive = index === activeSceneIndex;
+                  return (
+                    <div
+                      key={scene.id}
+                      className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                        isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                      }`}
+                    >
+                      <div
+                        className="relative w-full h-full transform transition-transform duration-700 ease-out"
+                        style={{
+                          transform: `translateY(${parallaxY}px) scale(${isActive ? 1.02 : 1})`,
+                        }}
+                      >
+                        <Image
+                          src={scene.image}
+                          alt={scene.alt}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 850px"
+                          priority={index === 0}
+                          className="object-cover object-center"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Subtle Ambient Vignette for text contrast */}
+                <div
+                  className="absolute inset-0 z-20 bg-gradient-to-t from-black/75 via-transparent to-black/20 pointer-events-none"
+                  aria-hidden="true"
+                />
+
+                {/* Floating Active Scene Badge */}
+                <div className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20 flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C89A2D] animate-pulse" />
+                  <span className="font-sans text-[10.5px] sm:text-[11px] tracking-wider uppercase font-medium">
+                    {activeScene.number} • {activeScene.title}
+                  </span>
+                </div>
+
+                {/* Active Scene Subtitle in Bottom Left */}
+                <div className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 z-20 text-white">
+                  <p className="font-serif text-lg sm:text-xl font-medium tracking-wide">
+                    {activeScene.title}
+                  </p>
+                  <p className="font-sans text-[11px] tracking-wider uppercase text-[#EFE4D6]/80 font-normal">
+                    {activeScene.subtitle} • Alur Showroom
+                  </p>
+                </div>
+
+                {/* Discreet Next / Prev Arrows */}
+                <div className="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 z-20 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevScene}
+                    aria-label="Previous showroom scene"
+                    className="w-8 h-8 rounded-full bg-black/50 hover:bg-[#D81B77] border border-white/20 flex items-center justify-center text-white transition-colors duration-200"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextScene}
+                    aria-label="Next showroom scene"
+                    className="w-8 h-8 rounded-full bg-black/50 hover:bg-[#D81B77] border border-white/20 flex items-center justify-center text-white transition-colors duration-200"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Delicate Outer Border */}
+                <div
+                  className="absolute inset-0 z-20 border border-white/10 rounded-[4px] pointer-events-none"
+                  aria-hidden="true"
                 />
               </div>
 
-              {/* Subtle Ambient Studio Vignette */}
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none"
-                aria-hidden="true"
-              />
-
-              {/* Floating Showroom Badge */}
-              <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-10 flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white">
-                <span className="w-2 h-2 rounded-full bg-[#C89A2D] animate-pulse" />
-                <span className="font-sans text-[11px] sm:text-xs tracking-wider uppercase font-medium">
-                  Alur Showroom Interior
-                </span>
+              {/* Compact 3-Scene Selector Tabs Beneath Main Image */}
+              <div className="grid grid-cols-3 gap-3">
+                {SHOWROOM_SCENES.map((scene, index) => {
+                  const isActive = index === activeSceneIndex;
+                  return (
+                    <button
+                      key={scene.id}
+                      type="button"
+                      onClick={() => setActiveSceneIndex(index)}
+                      className={`group relative text-left p-2.5 sm:p-3 rounded-[3px] border transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D81B77] ${
+                        isActive
+                          ? "bg-white border-[#C89A2D]/60 shadow-sm"
+                          : "bg-white/50 border-[#EFE4D6] hover:bg-white hover:border-[#C89A2D]/30"
+                      }`}
+                    >
+                      {/* Active Indicator Top Line */}
+                      <div
+                        className={`h-[2px] w-full mb-2 transition-all duration-300 ${
+                          isActive ? "bg-[#D81B77]" : "bg-transparent group-hover:bg-[#C89A2D]/40"
+                        }`}
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] tracking-widest text-[#C89A2D] font-medium">
+                          {scene.number}
+                        </span>
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full transition-opacity duration-300 ${
+                            isActive ? "bg-[#D81B77] opacity-100" : "opacity-0"
+                          }`}
+                        />
+                      </div>
+                      <p
+                        className={`font-serif text-xs sm:text-sm leading-snug mt-1 transition-colors duration-200 ${
+                          isActive ? "text-[#1E1A17] font-semibold" : "text-[#6B5B52]"
+                        }`}
+                      >
+                        {scene.title}
+                      </p>
+                      <p className="font-sans text-[10px] tracking-wider text-[#6B5B52]/70 uppercase hidden sm:block truncate mt-0.5">
+                        {scene.subtitle}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Delicate Gold Outer Accent Border */}
-              <div
-                className="absolute inset-0 border border-white/10 rounded-[6px] pointer-events-none"
-                aria-hidden="true"
-              />
             </div>
           </div>
 
         </div>
-
       </div>
     </section>
   );

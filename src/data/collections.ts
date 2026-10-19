@@ -38,7 +38,7 @@ export const COLLECTIONS_DATA: CollectionItem[] = [
   },
   {
     id: "party-wear",
-    number: "04",
+    number: "03",
     title: "Party Wear & Dress Sets",
     subtitle: "Celebration & Evening Ensemble",
     description: "Gracefully embellished ethnic party dresses and three-piece celebration ensembles.",
@@ -51,7 +51,7 @@ export const COLLECTIONS_DATA: CollectionItem[] = [
   // ─── Row 2: Versatile Wardrobe Curation (4 Cards, 3 cols each) ───
   {
     id: "western-tops",
-    number: "03",
+    number: "04",
     title: "Western Tops",
     subtitle: "Chic Everyday Blouses",
     description: "Sophisticated western blouses and fashion tops crafted with premium fabrics.",

@@ -58,9 +58,9 @@ export default function SiteFooter() {
       {/* ─── 2. Lower Visual Zone: Seamless Campaign Artwork ─── */}
       <FooterFashionArtwork />
 
-      {/* ─── 3. Final Footer Bottom Signature Line ─── */}
-      <div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 pb-8 sm:pb-10 pt-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-6 rounded-full bg-[#F8F2EA]/85 backdrop-blur-md border border-[#EFE4D6]/90 shadow-sm text-xs text-[#6B5B52]">
+      {/* ─── 3. Final Footer Bottom Signature Line (Slim, unobtrusive, non-covering) ─── */}
+      <div className="relative z-20 w-full border-t border-[#EFE4D6]/80 bg-[#F8F2EA]/92 backdrop-blur-md mt-auto">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B5B52]">
           
           {/* Dynamic Copyright */}
           <p className="font-sans text-[11.5px] tracking-wide text-[#6B5B52]/90">

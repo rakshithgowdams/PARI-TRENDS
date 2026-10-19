@@ -7,30 +7,65 @@ import { STYLE_STORIES, getStoryEnquiryUrl } from "@/data/style-stories";
 import StoryThumbnailRail from "./StoryThumbnailRail";
 import { siteConfig } from "@/config/site";
 
+interface StoryStageProps {
+  activeIndex?: number;
+  onSelectChapter?: (idx: number) => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  isStickyScroll?: boolean;
+}
+
 /**
  * StoryStage — Phase 06: Cinematic Style Stories Lookbook Stage
  *
  * Architecture & Zones:
  *  • Full-bleed 92svh immersive visual canvas with chapter-specific crossfading
  *  • Zone A: Top editorial metadata (04 / STYLE STORIES • EVERY LOOK HAS A STORY) & chapter counter
- *  • Zone B: Full-bleed 16:9 master fashion photography with story-specific framing and tonal mood
+ *  • Zone B: Full-bleed 16:9 master fashion photography with story-specific framing and vibrant clothing lighting
  *  • Zone C: Left editorial story block (Playfair headline with masked reveal, category, subtitle & CTA)
  *  • Zone D: Floating chapter navigator rail & circular prev/next controls with zero CTA collision
  *  • Accessibility: Tab/Enter/Space navigation, ARIA roles, ArrowLeft/ArrowRight keyboard support
  */
-export default function StoryStage() {
-  const [activeIndex, setActiveIndex] = useState(0);
+export default function StoryStage({
+  activeIndex: controlledIndex,
+  onSelectChapter,
+  onPrev: controlledPrev,
+  onNext: controlledNext,
+}: StoryStageProps = {}) {
+  const [internalIndex, setInternalIndex] = useState(0);
+  const isControlled = typeof controlledIndex === "number";
+  const activeIndex = isControlled ? controlledIndex : internalIndex;
+
+  const handleSelect = useCallback(
+    (idx: number) => {
+      if (onSelectChapter) {
+        onSelectChapter(idx);
+      } else {
+        setInternalIndex(idx);
+      }
+    },
+    [onSelectChapter]
+  );
+
+  const handlePrev = useCallback(() => {
+    if (controlledPrev) {
+      controlledPrev();
+    } else {
+      setInternalIndex((prev) => (prev > 0 ? prev - 1 : STYLE_STORIES.length - 1));
+    }
+  }, [controlledPrev]);
+
+  const handleNext = useCallback(() => {
+    if (controlledNext) {
+      controlledNext();
+    } else {
+      setInternalIndex((prev) => (prev < STYLE_STORIES.length - 1 ? prev + 1 : 0));
+    }
+  }, [controlledNext]);
+
   const isExternalWhatsApp = Boolean(siteConfig.whatsapp);
   const activeStory = STYLE_STORIES[activeIndex];
   const enquiryUrl = getStoryEnquiryUrl(activeStory.category);
-
-  const handlePrev = useCallback(() => {
-    setActiveIndex((prev) => (prev > 0 ? prev - 1 : STYLE_STORIES.length - 1));
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev < STYLE_STORIES.length - 1 ? prev + 1 : 0));
-  }, []);
 
   // Keyboard navigation support (Arrow keys)
   useEffect(() => {
@@ -78,7 +113,7 @@ export default function StoryStage() {
       {/* ─── Localized Atmospheric Lighting & Readability Gradients ─── */}
       {/* 1. Left-side gradient: guarantees high-contrast text readability without darkening model */}
       <div
-        className="absolute inset-y-0 left-0 w-full sm:w-[65%] lg:w-[52%] bg-gradient-to-r from-black/85 via-black/45 to-transparent pointer-events-none z-10"
+        className="absolute inset-y-0 left-0 w-full sm:w-[58%] lg:w-[46%] bg-gradient-to-r from-black/80 via-black/35 to-transparent pointer-events-none z-10"
         aria-hidden="true"
       />
 
@@ -186,7 +221,7 @@ export default function StoryStage() {
           <StoryThumbnailRail
             stories={STYLE_STORIES}
             activeIndex={activeIndex}
-            onSelect={setActiveIndex}
+            onSelect={handleSelect}
           />
         </div>
 

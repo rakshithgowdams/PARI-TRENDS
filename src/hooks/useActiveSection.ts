@@ -4,42 +4,72 @@ import { useEffect, useState } from "react";
 import { sectionIds } from "@/config/navigation";
 
 /**
- * Uses IntersectionObserver to track which homepage section is
- * currently most visible in the viewport.
+ * useActiveSection — Pari Trends Active Section Tracker
  *
- * Returns the active section ID string (e.g. "collections").
+ * Accurately tracks which homepage section is currently under the reading focal point
+ * (~120px beneath the fixed navbar).
+ *
+ * Works reliably across both standard sections and tall scrollytelling sequences
+ * (Hero 260svh, Style Stories 320svh), preventing jumpy or incorrect navigation highlighting.
  */
 export function useActiveSection(): string {
   const [active, setActive] = useState("home");
 
   useEffect(() => {
-    // Only observe sections that actually exist in the DOM.
-    const elements = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
+    let rafId: number | null = null;
 
-    if (elements.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Find the most-visible entry.
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        if (visible.length > 0 && visible[0].target.id) {
-          setActive(visible[0].target.id);
-        }
-      },
-      {
-        // rootMargin accounts for the fixed navbar height.
-        rootMargin: "-100px 0px -40% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+    const checkActiveSection = () => {
+      // If user is at the very top of the page
+      if (window.scrollY < 120) {
+        setActive("home");
+        return;
       }
-    );
 
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+      const header = document.querySelector("header");
+      const navbarHeight = header?.offsetHeight ?? 80;
+      // Focal point for reader attention: ~120px below navbar
+      const focalY = navbarHeight + 120;
+
+      const elements = sectionIds
+        .map((id) => ({ id, el: document.getElementById(id) }))
+        .filter((item): item is { id: string; el: HTMLElement } => Boolean(item.el));
+
+      // Check which section bounding rect encompasses focalY
+      for (const { id, el } of elements) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= focalY && rect.bottom > focalY) {
+          setActive(id);
+          return;
+        }
+      }
+
+      // If past all sections (e.g. at the bottom footer), default to last section
+      const last = elements[elements.length - 1];
+      if (last) {
+        const rect = last.el.getBoundingClientRect();
+        if (rect.bottom <= focalY) {
+          setActive(last.id);
+        }
+      }
+    };
+
+    const onScrollOrResize = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        checkActiveSection();
+        rafId = null;
+      });
+    };
+
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    checkActiveSection();
+
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return active;
