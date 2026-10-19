@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { ArrowUpRight, MapPin, ChevronDown } from "lucide-react";
 
 /**
@@ -400,10 +401,17 @@ export default function HeroScrollytelling() {
         ref={sectionRef}
         className="relative min-h-[90svh] w-full flex items-center bg-[#1E1A17] text-white overflow-hidden"
       >
-        <div
-          className="absolute inset-0 bg-cover bg-center hero-media-cover opacity-40"
-          style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
-        />
+        <div className="absolute inset-0 hero-media-cover opacity-40">
+          <Image
+            src="/images/pari-trends-hero-poster.jpg"
+            alt="Pari Trends Boutique Showroom in Alur"
+            fill
+            priority
+            sizes="100vw"
+            quality={85}
+            className="object-cover object-center hero-media-cover"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#1E1A17] via-black/50 to-black/70" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-10 lg:px-16">
@@ -448,12 +456,12 @@ export default function HeroScrollytelling() {
     >
       {/* Pinned 100svh viewport */}
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#1E1A17]">
-        {/* Walkthrough Video */}
+        {/* Walkthrough Video — preload metadata avoids 13MB initial network block */}
         <video
           ref={videoRef}
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/images/pari-trends-hero-poster.jpg"
           onLoadedMetadata={() => setVideoLoaded(true)}
           onError={() => setVideoError(true)}
@@ -464,6 +472,11 @@ export default function HeroScrollytelling() {
           tabIndex={-1}
         >
           <source
+            src="/videos/pari-trends-hero-scroll-720p.mp4"
+            type="video/mp4"
+            media="(max-width: 768px)"
+          />
+          <source
             src="/videos/pari-trends-hero-scroll-1080p.mp4"
             type="video/mp4"
           />
@@ -473,15 +486,25 @@ export default function HeroScrollytelling() {
           />
         </video>
 
-        {/* High-fidelity background poster — displayed until video frame renders, or as permanent fallback on error */}
+        {/* High-fidelity background poster — LCP Optimized with priority & high fetch priority */}
         <div
           ref={posterRef}
-          className={`absolute inset-0 bg-cover bg-center hero-media-cover transition-opacity duration-700 ${
+          className={`absolute inset-0 hero-media-cover transition-opacity duration-700 ${
             videoLoaded && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
-          style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
           aria-hidden="true"
-        />
+        >
+          <Image
+            src="/images/pari-trends-hero-poster.jpg"
+            alt="Pari Trends Boutique Showroom in Alur"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={85}
+            className="object-cover object-center hero-media-cover"
+          />
+        </div>
 
         {/* ─── Static Vignettes for Fixed Navbar & Upcoming Section Transitions ─── */}
         <div

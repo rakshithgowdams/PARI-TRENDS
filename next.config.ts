@@ -25,8 +25,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   images: {
-    qualities: [75, 90, 92, 95],
+    formats: ["image/avif", "image/webp"],
+    qualities: [75, 85, 90, 92, 95],
   },
+  compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
   cacheComponents: true,
@@ -44,6 +46,24 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
       },
     ];
   },

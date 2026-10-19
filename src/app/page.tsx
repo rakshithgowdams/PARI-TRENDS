@@ -1,10 +1,22 @@
+import dynamic from "next/dynamic";
 import HeroScrollytelling from "@/components/sections/HeroScrollytelling";
 import AboutPariTrends from "@/components/sections/AboutPariTrends";
-import SignatureCollections from "@/components/sections/SignatureCollections";
-import FeaturedEditorial from "@/components/sections/FeaturedEditorial";
-import StyleStories from "@/components/sections/StyleStories";
-import LatestTrendsTeaser from "@/components/sections/LatestTrendsTeaser";
-import VisitOurStore from "@/components/sections/VisitOurStore";
+
+const SignatureCollections = dynamic(
+  () => import("@/components/sections/SignatureCollections")
+);
+const FeaturedEditorial = dynamic(
+  () => import("@/components/sections/FeaturedEditorial")
+);
+const StyleStories = dynamic(
+  () => import("@/components/sections/StyleStories")
+);
+const LatestTrendsTeaser = dynamic(
+  () => import("@/components/sections/LatestTrendsTeaser")
+);
+const VisitOurStore = dynamic(
+  () => import("@/components/sections/VisitOurStore")
+);
 
 /**
  * Pari Trends — Homepage
