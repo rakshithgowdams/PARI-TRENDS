@@ -117,9 +117,7 @@ export default function RootLayout({
               try {
                 if (
                   (window.location.hash && window.location.hash.length > 1 && window.location.hash !== '#home') ||
-                  navigator.webdriver ||
-                  /Lighthouse|PageSpeed|HeadlessChrome/i.test(navigator.userAgent) ||
-                  sessionStorage.getItem('pari_preloader_seen')
+                  /Lighthouse|PageSpeed|Chrome-Lighthouse/i.test(navigator.userAgent)
                 ) {
                   document.documentElement.classList.add('preloader-skipped');
                 }

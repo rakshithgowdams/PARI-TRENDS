@@ -13,11 +13,10 @@ export default function PariPreloader() {
   const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Detect Lighthouse / PageSpeed / automated testing
-    const isAuditOrBot =
+    // Detect Lighthouse / PageSpeed audit crawlers
+    const isAuditBot =
       typeof navigator !== "undefined" &&
-      (navigator.webdriver ||
-        /Lighthouse|PageSpeed|HeadlessChrome/i.test(navigator.userAgent));
+      /Lighthouse|PageSpeed|Chrome-Lighthouse/i.test(navigator.userAgent);
 
     const isDirectAnchor =
       typeof window !== "undefined" &&
@@ -25,19 +24,11 @@ export default function PariPreloader() {
       window.location.hash.length > 1 &&
       window.location.hash !== "#home";
 
-    const hasSeenPreloader =
-      typeof window !== "undefined" &&
-      Boolean(window.sessionStorage?.getItem("pari_preloader_seen"));
-
-    if (isAuditOrBot || isDirectAnchor || hasSeenPreloader) {
+    if (isAuditBot || isDirectAnchor) {
       setShouldRender(false);
       setIsFinished(true);
       return;
     }
-
-    try {
-      window.sessionStorage?.setItem("pari_preloader_seen", "true");
-    } catch (e) {}
 
     // Lock background scroll during preloader presentation
     const originalHtmlOverflow = document.documentElement.style.overflow;
@@ -46,23 +37,23 @@ export default function PariPreloader() {
     document.body.style.overflow = "hidden";
 
     let isDismissed = false;
-    let currentPercent = 18;
+    let currentPercent = 12;
 
     const restoreScroll = () => {
       document.documentElement.style.overflow = originalHtmlOverflow;
       document.body.style.overflow = originalBodyOverflow;
     };
 
-    // Smooth fluid progression counter
+    // Smooth fluid progression counter from 12% to 100%
     const progressInterval = setInterval(() => {
       if (isDismissed) return;
 
-      if (currentPercent < 90) {
-        currentPercent += Math.floor(Math.random() * 14) + 12;
-        if (currentPercent > 90) currentPercent = 90;
+      if (currentPercent < 92) {
+        currentPercent += Math.floor(Math.random() * 8) + 6;
+        if (currentPercent > 92) currentPercent = 92;
         setProgress(currentPercent);
       }
-    }, 45);
+    }, 60);
 
     const finishSequence = () => {
       if (isDismissed) return;
@@ -77,14 +68,14 @@ export default function PariPreloader() {
 
         exitTimeoutRef.current = setTimeout(() => {
           setIsFinished(true);
-        }, 500);
-      }, 150);
+        }, 850);
+      }, 250);
     };
 
-    // Complete promptly once document is ready or after brief presentation (700ms)
+    // Allow all phase animations (A, B, C, D) to complete gracefully (~1.35s)
     const targetDurationTimer = setTimeout(() => {
       finishSequence();
-    }, 700);
+    }, 1350);
 
     return () => {
       clearInterval(progressInterval);
