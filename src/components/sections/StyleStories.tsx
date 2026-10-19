@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import StoryStage from "@/components/stories/StoryStage";
+import MobileCinematicStories from "@/components/stories/MobileCinematicStories";
 import { STYLE_STORIES } from "@/data/style-stories";
 
 /**
@@ -10,19 +11,17 @@ import { STYLE_STORIES } from "@/data/style-stories";
  * Section ID: `stories`
  *
  * Architecture:
- *  • Desktop (>= 1024px & !prefersReducedMotion):
- *      - Outer section height: ~320svh
- *      - Sticky stage pinned at top-0, 92svh tall
- *      - Single normalized progress = clamp((scrollY - offsetTop) / (offsetHeight - vh), 0, 1)
- *      - Drives active chapter (0..5), background crossfade, headline reveal, and thumbnail selection
- *      - Clicking a thumbnail or prev/next smoothly scrolls to that chapter's position on the same timeline
- *  • Mobile (< 1024px) or Reduced Motion:
- *      - Lightweight non-pinned interactive lookbook gallery with thumbnail tabs and swipe/arrows
+ *  • Desktop & Tablet (>= 768px):
+ *      - Full-bleed immersive 16:9 story stage pinned to top with chapter crossfading
+ *      - Scroll-linked chapter transitions & thumbnail rail
+ *  • Mobile (< 768px):
+ *      - Dedicated "CINEMATIC PORTRAIT STORIES" 4-zone mobile editorial layout
+ *      - Calibrated 3:4 portrait crops of the approved model photography
+ *      - Fully synchronized scroll-driven chapter progression, thumbnail rail & safe nav controls
  */
 export default function StyleStories() {
   const containerRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -31,19 +30,12 @@ export default function StyleStories() {
     const onMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mqMotion.addEventListener("change", onMotionChange);
 
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-
     return () => {
       mqMotion.removeEventListener("change", onMotionChange);
-      window.removeEventListener("resize", checkDesktop);
     };
   }, []);
 
-  const enableStickyScroll = isDesktop && !prefersReducedMotion;
+  const enableStickyScroll = !prefersReducedMotion;
 
   useEffect(() => {
     if (!enableStickyScroll) return;
@@ -60,11 +52,14 @@ export default function StyleStories() {
 
         const rect = container.getBoundingClientRect();
         const vh = window.innerHeight;
-        const totalScrollable = container.offsetHeight - vh;
+        const header = document.querySelector("header");
+        const navbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
+        const stageHeight = vh - navbarHeight;
+        const totalScrollable = container.offsetHeight - stageHeight;
         if (totalScrollable <= 0) return;
 
-        // Progress based on container's top position relative to viewport
-        const scrolled = -rect.top;
+        // Progress based on container's top position relative to sticky navbar boundary
+        const scrolled = navbarHeight - rect.top;
         const progress = Math.min(Math.max(scrolled / totalScrollable, 0), 1);
 
         // Map progress [0, 1] across the 6 chapters
@@ -88,22 +83,25 @@ export default function StyleStories() {
   }, [enableStickyScroll]);
 
   const scrollToChapter = (index: number) => {
+    setActiveIndex(index);
     const container = containerRef.current;
     if (enableStickyScroll && container) {
       const vh = window.innerHeight;
-      const totalScrollable = container.offsetHeight - vh;
+      const header = document.querySelector("header");
+      const navbarHeight = header?.offsetHeight ?? (window.innerWidth >= 1024 ? 80 : 76);
+      const stageHeight = vh - navbarHeight;
+      const totalScrollable = container.offsetHeight - stageHeight;
       const chapterCount = STYLE_STORIES.length;
       // Scroll to the midpoint of the chapter segment
       const targetRatio = (index + 0.5) / chapterCount;
       const containerTop = window.scrollY + container.getBoundingClientRect().top;
-      const targetScrollY = containerTop + targetRatio * totalScrollable;
+      const stickStartScrollY = containerTop - navbarHeight;
+      const targetScrollY = stickStartScrollY + targetRatio * totalScrollable;
 
       window.scrollTo({
         top: targetScrollY,
         behavior: "smooth",
       });
-    } else {
-      setActiveIndex(index);
     }
   };
 
@@ -126,14 +124,33 @@ export default function StyleStories() {
       }`}
       aria-label="Style Stories — Pari Trends Editorial Lookbook"
     >
-      <div className={enableStickyScroll ? "sticky top-0 w-full h-[92svh] overflow-hidden" : "relative w-full"}>
-        <StoryStage
-          activeIndex={activeIndex}
-          onSelectChapter={scrollToChapter}
-          onPrev={handlePrev}
-          onNext={handleNext}
-          isStickyScroll={enableStickyScroll}
-        />
+      <div
+        className={
+          enableStickyScroll
+            ? "style-stories-stage w-full overflow-hidden"
+            : "relative w-full h-[calc(100dvh-var(--navbar-height))] min-h-[560px] overflow-hidden"
+        }
+      >
+        {/* Desktop & Tablet: Approved & Locked StoryStage (>= 768px) */}
+        <div className="hidden md:block w-full h-full">
+          <StoryStage
+            activeIndex={activeIndex}
+            onSelectChapter={scrollToChapter}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            isStickyScroll={enableStickyScroll}
+          />
+        </div>
+
+        {/* Mobile: Dedicated Cinematic Portrait Stories (< 768px) */}
+        <div className="block md:hidden w-full h-full">
+          <MobileCinematicStories
+            activeIndex={activeIndex}
+            onSelectChapter={scrollToChapter}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
+        </div>
       </div>
     </section>
   );

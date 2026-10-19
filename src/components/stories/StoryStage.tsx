@@ -81,7 +81,7 @@ export default function StoryStage({
   }, [handlePrev, handleNext]);
 
   return (
-    <div className="relative w-full h-[92svh] min-h-[660px] max-h-[960px] overflow-hidden select-none bg-[#12100E] text-white flex flex-col justify-between">
+    <div className="relative w-full h-full min-h-[580px] overflow-hidden select-none bg-[#12100E] text-white flex flex-col justify-between">
       {/* ─── ZONE B: Main Background Photographs with Smooth Crossfade ─── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
         {STYLE_STORIES.map((story, idx) => {

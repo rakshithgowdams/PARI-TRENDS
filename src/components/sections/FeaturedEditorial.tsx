@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import EditorialAccordion from "@/components/featured/EditorialAccordion";
-import MobileEditorialCarousel from "@/components/featured/MobileEditorialCarousel";
+import MobileStyleAtelier from "@/components/featured/MobileStyleAtelier";
 
 /**
  * FeaturedEditorial — Phase 05: Worth Your Attention
@@ -10,10 +10,8 @@ import MobileEditorialCarousel from "@/components/featured/MobileEditorialCarous
  * Section ID: `featured`
  *
  * Architectural Features:
- *  • Interactive expanding horizontal editorial accordion inspired by references 4–7
- *  • Six adjacent vertical fashion panels with central "03 — Celebration Edit" expanded by default
- *  • Desaturated inactive panels (with rotated spine lettering) vs full-colour active panel
- *  • Touch-friendly mobile swipe carousel with snap alignment and pagination
+ *  • Desktop: Interactive expanding horizontal editorial accordion (Approved & Locked)
+ *  • Mobile: The Pari Style Atelier — Interactive single-look configurator with vertical 6-look selector & expandable drawer
  *  • Staggered IntersectionObserver scroll reveals respecting prefers-reduced-motion
  */
 export default function FeaturedEditorial() {
@@ -60,7 +58,7 @@ export default function FeaturedEditorial() {
     <section
       id="featured"
       ref={sectionRef}
-      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-20 sm:py-28 lg:py-32 overflow-hidden border-t border-[#EFE4D6]"
+      className="relative w-full bg-[#F8F2EA] text-[#1E1A17] py-14 sm:py-24 lg:py-32 overflow-hidden border-t border-[#EFE4D6]"
       aria-label="Worth Your Attention — The Pari Edit"
     >
       {/* ─── Ambient Studio Glow ─── */}
@@ -122,25 +120,29 @@ export default function FeaturedEditorial() {
               A closer look at the styles that make every moment special.
             </p>
             <span className="block mt-2 font-sans text-[10px] tracking-[0.2em] uppercase text-[#1E1A17]/40 font-medium">
-              SIX FEATURED THEMES • INTERACTIVE ACCORDION
+              SIX FEATURED THEMES • INTERACTIVE ATELIER
             </span>
           </div>
         </div>
 
-        {/* ─── Accordion & Carousel Showcase ─── */}
+        {/* ─── Accordion & Atelier Showcase ─── */}
         <div
-          className={`mt-8 sm:mt-10 transition-all duration-1000 ease-out ${
+          className={`mt-6 sm:mt-10 transition-all duration-1000 ease-out ${
             isVisible || prefersReducedMotion
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"
           }`}
           style={{ transitionDelay: prefersReducedMotion ? "0ms" : "400ms" }}
         >
-          {/* Desktop Interactive Accordion */}
-          <EditorialAccordion defaultActiveId="celebration-edit" />
+          {/* Desktop Interactive Accordion (Approved & Locked >= 1024px) */}
+          <div className="hidden lg:block w-full">
+            <EditorialAccordion defaultActiveId="celebration-edit" />
+          </div>
 
-          {/* Mobile & Tablet Editorial Carousel */}
-          <MobileEditorialCarousel />
+          {/* Mobile & Tablet Interactive Style Atelier (< 1024px) */}
+          <div className="block lg:hidden w-full">
+            <MobileStyleAtelier prefersReducedMotion={prefersReducedMotion} />
+          </div>
         </div>
 
         {/* ─── Bottom Subtle Editorial Caption ─── */}

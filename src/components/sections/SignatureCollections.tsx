@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import CollectionCard from "@/components/collections/CollectionCard";
+import MobileCollectionsScrollytelling from "@/components/collections/MobileCollectionsScrollytelling";
 import { COLLECTIONS_DATA } from "@/data/collections";
 
 /**
@@ -81,18 +82,20 @@ export default function SignatureCollections() {
     <section
       id="collections"
       ref={sectionRef}
-      className="relative w-full bg-[#FAF5EE] text-[#1E1A17] py-24 sm:py-32 lg:py-40 overflow-hidden border-t border-[#EFE4D6]"
+      className="relative w-full bg-[#FAF5EE] text-[#1E1A17] pt-16 sm:pt-24 md:py-32 lg:py-40 pb-0 md:pb-32 overflow-visible border-t border-[#EFE4D6]"
       aria-label="Signature Collections — Pari Trends"
     >
-      {/* ─── Ambient Studio Light Warm Glow ─── */}
-      <div
-        className="absolute top-1/4 -right-40 w-[600px] h-[600px] rounded-full bg-[#EFE4D6]/40 blur-3xl pointer-events-none -z-0"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-10 -left-40 w-[500px] h-[500px] rounded-full bg-[#EFE4D6]/35 blur-3xl pointer-events-none -z-0"
-        aria-hidden="true"
-      />
+      {/* ─── Ambient Studio Light Warm Glow (contained in overflow-hidden layer) ─── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0" aria-hidden="true">
+        <div
+          className="absolute top-1/4 -right-40 w-[600px] h-[600px] rounded-full bg-[#EFE4D6]/40 blur-3xl pointer-events-none"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute bottom-10 -left-40 w-[500px] h-[500px] rounded-full bg-[#EFE4D6]/35 blur-3xl pointer-events-none"
+          aria-hidden="true"
+        />
+      </div>
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
         
@@ -148,8 +151,16 @@ export default function SignatureCollections() {
           </div>
         </div>
 
-        {/* ─── Editorial Grid: 12-Column Responsive Layout with Row-by-Row Gallery Reveal ─── */}
-        <div className="mt-12 sm:mt-16 space-y-6">
+        {/* ─── Mobile Horizontal Scrollytelling Gallery (< 768px) ─── */}
+        <div className="block md:hidden -mx-6 mt-6">
+          <MobileCollectionsScrollytelling
+            collections={COLLECTIONS_DATA}
+            prefersReducedMotion={prefersReducedMotion}
+          />
+        </div>
+
+        {/* ─── Desktop / Tablet Editorial Grid: 12-Column Responsive Layout (>= 768px) ─── */}
+        <div className="hidden md:block mt-12 sm:mt-16 space-y-6">
           {/* Row 1: Statement Sets (3 Cards, 4 cols each) */}
           <div
             ref={row1Ref}
@@ -204,8 +215,8 @@ export default function SignatureCollections() {
           </div>
         </div>
 
-        {/* ─── Bottom Subtle Editorial Note ─── */}
-        <div className="mt-12 sm:mt-16 pt-8 border-t border-[#EFE4D6]/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B5B52]">
+        {/* ─── Bottom Subtle Editorial Note (Desktop / Tablet) ─── */}
+        <div className="hidden md:flex mt-12 sm:mt-16 pt-8 border-t border-[#EFE4D6]/70 flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B5B52]">
           <p className="font-sans text-[11px] tracking-[0.16em] uppercase text-[#6B5B52]/80">
             Handpicked fabrics • Made for modern Indian women
           </p>

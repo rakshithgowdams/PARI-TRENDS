@@ -6,10 +6,14 @@ export interface StyleStory {
   title: string;
   subtitle: string;
   category: string;
-  image: string;
+  image: string; // Approved landscape image for desktop
+  mobileImage: string; // Calibrated portrait image for mobile
   alt: string;
   moodColor: string;
-  objectPosition: string;
+  objectPosition: string; // Desktop main background framing (model right-weighted)
+  mobilePosition: string; // Mobile portrait framing
+  thumbnailPosition: string; // Desktop thumbnail crop
+  mobileThumbnailPosition: string; // Mobile thumbnail crop
 }
 
 export const STYLE_STORIES: StyleStory[] = [
@@ -20,9 +24,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Where effortless elegance begins.",
     category: "Kurti / Kurta Sets",
     image: "/images/stories/01-first-light.jpg",
+    mobileImage: "/images/stories/portrait/01-first-light.jpg",
     alt: "Pari Trends Style Story 01 First Light — Artisanal embroidered kurti kurta set in morning ivory light",
     moodColor: "rgba(248, 242, 234, 0.10)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "74% 22%",
+    mobileThumbnailPosition: "center 20%",
   },
   {
     id: "city-bloom",
@@ -31,9 +39,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Confidence, styled your way.",
     category: "Co-ord Sets / Western Tops",
     image: "/images/stories/02-city-bloom.jpg",
+    mobileImage: "/images/stories/portrait/02-city-bloom.jpg",
     alt: "Pari Trends Style Story 02 City Bloom — Contemporary tailored matching co-ord set in muted terracotta",
     moodColor: "rgba(216, 120, 95, 0.12)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "74% 22%",
+    mobileThumbnailPosition: "center 20%",
   },
   {
     id: "golden-hour",
@@ -42,9 +54,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Little details. Lasting impressions.",
     category: "Dupatta Sets",
     image: "/images/stories/03-golden-hour.jpg",
+    mobileImage: "/images/stories/portrait/03-golden-hour.jpg",
     alt: "Pari Trends Style Story 03 Golden Hour — Gracefully draped artisanal dupatta ensemble in olive gold",
     moodColor: "rgba(200, 154, 45, 0.12)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "71% 20%",
+    mobileThumbnailPosition: "center 18%",
   },
   {
     id: "celebration-glow",
@@ -53,9 +69,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Made for moments worth remembering.",
     category: "Party Wear & Dress Sets",
     image: "/images/stories/04-celebration-glow.jpg",
+    mobileImage: "/images/stories/portrait/04-celebration-glow.jpg",
     alt: "Pari Trends Style Story 04 Celebration Glow — Richly embellished emerald green festive party wear dress set",
     moodColor: "rgba(173, 20, 87, 0.14)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "73% 20%",
+    mobileThumbnailPosition: "center 18%",
   },
   {
     id: "everyday-ease",
@@ -64,9 +84,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Comfort that moves with you.",
     category: "Leggings / Straight Pants",
     image: "/images/stories/05-everyday-ease.jpg",
+    mobileImage: "/images/stories/portrait/05-everyday-ease.jpg",
     alt: "Pari Trends Style Story 05 Everyday Ease — Tailored warm sand straight pants with embroidered hip kurti",
     moodColor: "rgba(189, 155, 115, 0.10)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "74% 22%",
+    mobileThumbnailPosition: "center 20%",
   },
   {
     id: "soft-hours",
@@ -75,9 +99,13 @@ export const STYLE_STORIES: StyleStory[] = [
     subtitle: "Comfort in every little moment.",
     category: "Nightwear",
     image: "/images/stories/06-soft-hours.jpg",
+    mobileImage: "/images/stories/portrait/06-soft-hours.jpg",
     alt: "Pari Trends Style Story 06 Soft Hours — Breathable modest cotton lounge nightwear set in soft dusty rose",
     moodColor: "rgba(170, 145, 138, 0.12)",
     objectPosition: "object-[center_35%] lg:object-[center_30%]",
+    mobilePosition: "center 22%",
+    thumbnailPosition: "74% 22%",
+    mobileThumbnailPosition: "center 20%",
   },
 ];
 

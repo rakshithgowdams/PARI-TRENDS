@@ -3,6 +3,7 @@ import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import PariPreloader from "@/components/ui/PariPreloader";
 import { siteConfig } from "@/config/site";
 
 const playfair = Playfair_Display({
@@ -106,9 +107,22 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${playfair.variable} ${manrope.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-[#F8F2EA] text-[#1E1A17]">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (window.location.hash && window.location.hash.length > 1) {
+                  document.documentElement.classList.add('preloader-skipped');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+        <PariPreloader />
         <SiteHeader />
         {children}
         <SiteFooter />

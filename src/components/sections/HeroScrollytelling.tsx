@@ -37,6 +37,7 @@ function smoothstep(min: number, max: number, val: number): number {
 export default function HeroScrollytelling() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const posterRef = useRef<HTMLDivElement>(null);
 
   // Gradient refs for dynamic position-following overlays
   const grad1Ref = useRef<HTMLDivElement>(null);
@@ -303,6 +304,40 @@ export default function HeroScrollytelling() {
 
       updateTypographyAndGradients(progress);
 
+      // ─────────────────────────────────────────────────────────────
+      // Responsive Mobile Video & Poster Focal Point Interpolation
+      // Focuses on the showroom illuminated wall logo at progress 0.00–0.10,
+      // smoothly interpolates from 85% to 50% between 0.10 and 0.25,
+      // and holds at standard 50% center crop for 0.25–1.00.
+      // Desktop / tablet (> 768px) is strictly preserved with center crop.
+      // ─────────────────────────────────────────────────────────────
+      if (window.innerWidth <= 768) {
+        let focalX = 85;
+        if (progress > 0.10 && progress < 0.25) {
+          const u = (progress - 0.10) / 0.15;
+          const t = u * u * (3 - 2 * u); // cubic Hermite smoothstep
+          focalX = 85 + (50 - 85) * t;
+        } else if (progress >= 0.25) {
+          focalX = 50;
+        }
+
+        const focalPos = `${focalX.toFixed(2)}% center`;
+        if (videoRef.current) {
+          videoRef.current.style.objectPosition = focalPos;
+        }
+        if (posterRef.current) {
+          posterRef.current.style.backgroundPosition = focalPos;
+        }
+      } else {
+        // Desktop / tablet (> 768px): clear inline overrides to preserve approved styles
+        if (videoRef.current && videoRef.current.style.objectPosition) {
+          videoRef.current.style.objectPosition = "";
+        }
+        if (posterRef.current && posterRef.current.style.backgroundPosition) {
+          posterRef.current.style.backgroundPosition = "";
+        }
+      }
+
       // Seek video if metadata is ready and duration is valid
       if (
         video.readyState >= 1 &&
@@ -366,7 +401,7 @@ export default function HeroScrollytelling() {
         className="relative min-h-[90svh] w-full flex items-center bg-[#1E1A17] text-white overflow-hidden"
       >
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-40"
+          className="absolute inset-0 bg-cover bg-center hero-media-cover opacity-40"
           style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1E1A17] via-black/50 to-black/70" />
@@ -422,7 +457,7 @@ export default function HeroScrollytelling() {
           poster="/images/pari-trends-hero-poster.jpg"
           onLoadedMetadata={() => setVideoLoaded(true)}
           onError={() => setVideoError(true)}
-          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+          className={`absolute inset-0 h-full w-full object-cover object-center hero-media-cover transition-opacity duration-700 ${
             videoError ? "opacity-0" : "opacity-100"
           }`}
           aria-hidden="true"
@@ -431,7 +466,6 @@ export default function HeroScrollytelling() {
           <source
             src="/videos/pari-trends-hero-scroll-1080p.mp4"
             type="video/mp4"
-            media="(min-width: 769px)"
           />
           <source
             src="/videos/pari-trends-hero-scroll-720p.mp4"
@@ -441,7 +475,8 @@ export default function HeroScrollytelling() {
 
         {/* High-fidelity background poster — displayed until video frame renders, or as permanent fallback on error */}
         <div
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
+          ref={posterRef}
+          className={`absolute inset-0 bg-cover bg-center hero-media-cover transition-opacity duration-700 ${
             videoLoaded && !videoError ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
           style={{ backgroundImage: `url('/images/pari-trends-hero-poster.jpg')` }}
@@ -454,7 +489,7 @@ export default function HeroScrollytelling() {
           aria-hidden="true"
         />
         <div
-          className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none z-10"
+          className="absolute inset-x-0 bottom-0 h-64 sm:h-72 lg:h-28 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none z-10"
           aria-hidden="true"
         />
 
@@ -486,7 +521,7 @@ export default function HeroScrollytelling() {
         {/* ─── SCENE 01: WELCOME (Left-aligned, lower-middle viewport) ─── */}
         <div
           ref={s1GroupRef}
-          className="absolute inset-0 z-20 flex items-center lg:items-end justify-start px-6 sm:px-10 lg:px-[7vw] pb-16 sm:pb-20 lg:pb-[13vh] pointer-events-auto"
+          className="absolute inset-0 z-20 flex items-end justify-start px-6 sm:px-10 lg:px-[7vw] pb-20 sm:pb-24 lg:pb-[13vh] pointer-events-auto"
           style={{ opacity: 1 }}
         >
           <div className="max-w-2xl w-full flex flex-col items-start text-left">

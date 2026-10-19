@@ -1,0 +1,224 @@
+/* ─── Pari Trends Luxury Signature Reveal Preloader ─── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100dvh;
+  background-color: #F8F2EA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  pointer-events: auto;
+  will-change: transform;
+  transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.overlay.exiting {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+  transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.overlay.exiting .content {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.96);
+}
+
+/* ─── Ambient Glow Behind Medallion ─── */
+
+.ambientGlow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 154, 45, 0.22) 0%, rgba(216, 27, 119, 0.08) 45%, transparent 70%);
+  filter: blur(12px);
+  animation: pulseGlow 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* ─── Phase A: Fine Gold Ring Drawing ─── */
+
+.ringCircle {
+  stroke-dasharray: 295.31;
+  stroke-dashoffset: 295.31;
+  animation: drawRing 1000ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes drawRing {
+  0% {
+    stroke-dashoffset: 295.31;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ─── Phase B: Logo Medallion Appearance ─── */
+
+.logoMedallion {
+  animation: revealLogo 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealLogo {
+  0% {
+    opacity: 0;
+    transform: scale(0.90);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── Phase C: Brand Typography Reveal ─── */
+
+.brandName {
+  animation: revealBrand 650ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+@keyframes revealBrand {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.brandDivider {
+  animation: revealDivider 600ms cubic-bezier(0.16, 1, 0.3, 1) 350ms both;
+}
+
+@keyframes revealDivider {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.taglineText {
+  animation: revealTagline 600ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both;
+}
+
+@keyframes revealTagline {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Phase D: Linear Shimmering Progress Bar ─── */
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  animation: revealProgress 400ms ease-out 500ms both;
+}
+
+@keyframes revealProgress {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.progressTrack {
+  position: relative;
+  width: 140px;
+  height: 2px;
+  background-color: #E6D9C9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #C89A2D 0%, #D81B77 100%);
+  border-radius: 9999px;
+  transition: width 120ms linear;
+  box-shadow: 0 0 8px rgba(216, 27, 119, 0.35);
+}
+
+.progressCounter {
+  font-family: var(--font-manrope), sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: #C89A2D;
+}
+
+/* ─── Reduced Motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    transition: opacity 300ms ease-out;
+  }
+
+  .overlay.exiting {
+    transform: none;
+    opacity: 0;
+  }
+
+  .ringCircle {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .ambientGlow {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .logoMedallion,
+  .brandName,
+  .brandDivider,
+  .taglineText,
+  .progressContainer {
+    animation-duration: 200ms;
+    animation-delay: 0ms;
+  }
+}

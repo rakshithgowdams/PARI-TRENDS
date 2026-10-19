@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
+import MobileFashionIndex from "@/components/trends/MobileFashionIndex";
 import { siteConfig } from "@/config/site";
 
 interface TrendCategory {
@@ -20,64 +21,64 @@ const TREND_CATEGORIES: TrendCategory[] = [
     id: "kurti-kurta",
     number: "01",
     title: "Kurti / Kurta Sets",
-    subtitle: "Everyday to Occasion",
-    description: "Refined Indian kurta sets with coordinated trousers and tasteful embroidery.",
-    image: "/images/collections/01-kurti-kurta-sets.jpg",
-    alt: "Pari Trends contemporary Indian Kurti and Kurta set with tasteful embroidery",
+    subtitle: "Pastel Sage & Pearl Embroidery",
+    description: "Refined sage-mint silk kurta set with delicate pearl floral embroidery, paired with classic tailored cigarette trousers.",
+    image: "/images/trends/trends-01-kurti-kurta.jpg",
+    alt: "Pari Trends pastel sage silk kurti set with delicate pearl embroidery and straight trousers",
   },
   {
     id: "co-ords",
     number: "02",
     title: "Co-ord Sets",
-    subtitle: "Modern Matching Silhouettes",
-    description: "Contemporary two-piece coordinated sets designed for effortless elegance.",
-    image: "/images/collections/02-co-ord-sets.jpg",
-    alt: "Pari Trends modern matching two-piece co-ord set with tailored trousers",
+    subtitle: "Tailored Oat-Beige Wrap Set",
+    description: "Contemporary two-piece tailored wrap tunic with a fabric tie belt, clean lapels, and matching wide-leg trousers.",
+    image: "/images/trends/trends-02-co-ord-sets.jpg",
+    alt: "Pari Trends modern tailored wrap-style tunic and wide-leg trousers co-ord set",
   },
   {
     id: "party-wear",
     number: "03",
     title: "Party Wear & Dress Sets",
-    subtitle: "Celebration Ensembles",
-    description: "Gracefully embellished ethnic party dresses and three-piece celebration ensembles.",
-    image: "/images/collections/04-party-wear.jpg",
-    alt: "Pari Trends embellished occasion-ready party wear ensemble with rich fabric detailing",
+    subtitle: "Emerald Green & Gold Zari Gown",
+    description: "Opulent deep emerald green Anarkali dress set with rich antique gold zari embroidery and scalloped organza dupatta.",
+    image: "/images/trends/trends-03-party-wear.jpg",
+    alt: "Pari Trends festive deep emerald green Anarkali dress set with gold zari work and scalloped dupatta",
   },
   {
     id: "western-tops",
     number: "04",
     title: "Western Tops",
-    subtitle: "Chic Everyday Blouses",
-    description: "Sophisticated western blouses and fashion tops crafted with premium fabrics.",
-    image: "/images/collections/03-western-tops.jpg",
-    alt: "Pari Trends chic contemporary western blouse top paired with neutral trousers",
+    subtitle: "Terracotta Peplum & Bishop Sleeves",
+    description: "Sophisticated terracotta-rust georgette peplum top with pintuck pleats and bishop sleeves, styled with high-waisted trousers.",
+    image: "/images/trends/trends-04-western-tops.jpg",
+    alt: "Pari Trends terracotta peplum blouse with bishop sleeves and tailored trousers",
   },
   {
     id: "nightwear",
     number: "05",
     title: "Nightwear",
-    subtitle: "Soft Cotton Home Comfort",
-    description: "Gentle, modest coordinated loungewear and night sets crafted from breathable cotton.",
-    image: "/images/collections/05-nightwear.jpg",
-    alt: "Pari Trends comfortable soft cotton coordinated lounge and nightwear set",
+    subtitle: "Mist-Blue Cotton Satin Set",
+    description: "Pure cotton satin notch-collar loungewear sleep set with delicate white micro-piping and relaxed trousers for serene comfort.",
+    image: "/images/trends/trends-05-nightwear.jpg",
+    alt: "Pari Trends soft mist-blue cotton satin notch-collar loungewear sleep set",
   },
   {
     id: "leggings-pants",
     number: "06",
     title: "Leggings / Straight Pants",
-    subtitle: "Tailored Lower Silhouettes",
-    description: "Perfect-fit straight trousers and soft leggings styled for comfort and poise.",
-    image: "/images/collections/06-leggings-pants.jpg",
-    alt: "Pari Trends tailored straight-cut trousers and comfortable leggings silhouette",
+    subtitle: "Tailored Olive-Sage Cigarette Pants",
+    description: "Perfect-fit tailored olive-sage straight-cut cigarette trousers with sharp pintuck creases, paired with an elegant cream side-slit tunic.",
+    image: "/images/trends/trends-06-leggings-pants.jpg",
+    alt: "Pari Trends tailored olive-sage cigarette trousers with sharp pintuck creases",
   },
   {
     id: "dupatta-sets",
     number: "07",
     title: "Dupatta Sets",
-    subtitle: "Artisanal Drapery & Sheers",
-    description: "Exquisite coordinated ethnic sets highlighting gracefully draped artisanal dupattas.",
-    image: "/images/collections/07-dupatta-sets.jpg",
-    alt: "Pari Trends elegant ethnic ensemble featuring a beautifully draped embroidered dupatta",
+    subtitle: "Marigold Woven Banarasi Silk Hero",
+    description: "Exquisite marigold-gold Banarasi silk dupatta richly woven with floral zari jaal, draped over a minimalist raw-silk kurta set.",
+    image: "/images/trends/trends-07-dupatta-sets.jpg",
+    alt: "Pari Trends opulent marigold-gold Banarasi silk dupatta with golden zari floral jaal",
   },
 ];
 
@@ -152,7 +153,7 @@ export default function LatestTrendsTeaser() {
     <section
       id="trends"
       ref={sectionRef}
-      className="relative w-full bg-[#FAF5EE] text-[#1E1A17] py-24 sm:py-32 lg:py-40 overflow-hidden border-t border-[#EFE4D6]"
+      className="relative w-full bg-[#FAF5EE] text-[#1E1A17] py-16 sm:py-24 md:py-32 lg:py-40 overflow-hidden border-t border-[#EFE4D6]"
       aria-label="Latest Trends — Pari Trends Editorial Directory"
     >
       {/* ─── Ambient Studio Glow ─── */}
@@ -167,8 +168,13 @@ export default function LatestTrendsTeaser() {
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
         
-        {/* ─── 3-Zone Editorial Layout ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
+        {/* ─── Mobile Fashion Index (< 768px) ─── */}
+        <div className="block md:hidden w-full">
+          <MobileFashionIndex prefersReducedMotion={prefersReducedMotion} />
+        </div>
+
+        {/* ─── Desktop / Tablet 3-Zone Composition (>= 768px - Locked) ─── */}
+        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
           
           {/* ═════════ ZONE 1: LEFT TYPOGRAPHY & FASHION STORY (3-4 cols) ═════════ */}
           <div
