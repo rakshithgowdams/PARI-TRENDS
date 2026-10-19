@@ -100,7 +100,7 @@ export default function StoryStage({
                 alt={story.alt}
                 fill
                 priority={idx === 0}
-                sizes="100vw"
+                sizes="(min-width: 768px) 100vw, 1px"
                 className={`object-cover ${story.objectPosition} transform transition-transform duration-1000 ease-out ${
                   isCurrent ? "scale-100" : "scale-[1.02]"
                 }`}

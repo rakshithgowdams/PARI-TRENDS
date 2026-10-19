@@ -24,6 +24,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    qualities: [75, 90, 92, 95],
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   cacheComponents: true,
